@@ -1,0 +1,31 @@
+{
+  "name": "TraderOS — Dashboard Pro",
+  "short_name": "TraderOS",
+  "description": "Dashboard profesional de trading con IA y alertas en tiempo real.",
+  "start_url": "/Trader.OS/",
+  "scope": "/Trader.OS/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#090C10",
+  "theme_color": "#090C10",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/McTRing/Trader.OS/main/icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/McTRing/Trader.OS/main/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {"name": "Alertas IA", "short_name": "Alertas", "url": "/Trader.OS/?page=alertas"},
+    {"name": "Diario", "short_name": "Diario", "url": "/Trader.OS/?page=diario"},
+    {"name": "Leaderboard", "short_name": "Ranking", "url": "/Trader.OS/?page=leaderboard"}
+  ]
+}

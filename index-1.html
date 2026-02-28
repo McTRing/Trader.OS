@@ -1,0 +1,2726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TraderOS v3 — Dashboard Pro</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#090C10">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TraderOS">
+<link rel="apple-touch-icon" href="/icons/icon-192.svg">
+<meta name="description" content="Dashboard profesional de trading con IA, alertas en tiempo real y análisis de patrones.">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#090c10;--bg2:#0d1117;--bg3:#161b22;--bg4:#1c2330;
+  --border:#21262d;--border2:#30363d;
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --green:#3fb950;--red:#f85149;--blue:#58a6ff;--blue2:#1f6feb;
+  --yellow:#e3b341;--purple:#bc8cff;--orange:#f0883e;
+  --glow:rgba(88,166,255,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(88,166,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(88,166,255,.025) 1px,transparent 1px);
+  background-size:48px 48px;}
+.shell{display:flex;height:100vh;position:relative;z-index:1;}
+
+/* SIDEBAR */
+.sidebar{width:215px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.logo{padding:18px 18px 14px;border-bottom:1px solid var(--border);}
+.logo-mark{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;}
+.logo-mark span{color:var(--blue);}
+.logo-ver{font-size:8px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+.nav{flex:1;padding:8px 0;overflow-y:auto;}
+.nsec{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;padding:10px 18px 4px;}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 18px;font-size:11px;color:var(--text2);cursor:pointer;transition:all .15s;border-left:2px solid transparent;}
+.ni:hover{color:var(--text);background:rgba(255,255,255,.03);}
+.ni.on{color:var(--blue);background:var(--glow);border-left-color:var(--blue);}
+.ni-ic{font-size:13px;width:16px;text-align:center;}
+.nbadge{margin-left:auto;font-size:9px;padding:1px 6px;border-radius:10px;background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.2);}
+.nbadge.warn{background:rgba(240,136,62,.15);color:var(--orange);border-color:rgba(240,136,62,.2);}
+.sb-bot{border-top:1px solid var(--border);padding:12px 16px;}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:48px;flex-shrink:0;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:rgba(9,12,16,.95);backdrop-filter:blur(12px);}
+.ptitle{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
+.live-pill{display:flex;align-items:center;gap:5px;padding:2px 9px;border-radius:20px;font-size:9px;letter-spacing:1.5px;background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.25);color:var(--green);}
+.pulse{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+.chip{font-size:10px;color:var(--text2);padding:3px 9px;border-radius:4px;background:var(--bg3);border:1px solid var(--border);}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;}
+.page{display:none;padding:16px 20px;}
+.page.on{display:block;animation:fu .2s ease;}
+@keyframes fu{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:none;}}
+
+/* GRID */
+.row{display:flex;gap:12px;margin-bottom:12px;}
+.row>*{min-width:0;}
+.col{flex:1;}.col2{flex:2;}.col3{flex:3;}
+.kpi-row{display:grid;gap:10px;margin-bottom:12px;}
+.k4{grid-template-columns:repeat(4,1fr);}
+.k3{grid-template-columns:repeat(3,1fr);}
+.k5{grid-template-columns:repeat(5,1fr);}
+.kpi{background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:12px 14px;position:relative;overflow:hidden;}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kpi.g::after{background:var(--green);}.kpi.b::after{background:var(--blue);}
+.kpi.y::after{background:var(--yellow);}.kpi.r::after{background:var(--red);}
+.kpi.p::after{background:var(--purple);}.kpi.o::after{background:var(--orange);}
+.kl{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:5px;}
+.kv{font-size:20px;font-weight:800;font-family:'Syne',sans-serif;}
+.kv.g{color:var(--green);}.kv.b{color:var(--blue);}.kv.y{color:var(--yellow);}
+.kv.r{color:var(--red);}.kv.p{color:var(--purple);}.kv.o{color:var(--orange);}
+.ks{font-size:9px;color:var(--text3);margin-top:3px;}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:7px;overflow:hidden;display:flex;flex-direction:column;}
+.ch{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.ct{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;}
+.ctag{font-size:9px;padding:2px 7px;border-radius:4px;background:var(--bg3);color:var(--text3);border:1px solid var(--border);}
+.ctag.gr{background:rgba(63,185,80,.1);color:var(--green);border-color:rgba(63,185,80,.25);}
+.ctag.rd{background:rgba(248,81,73,.1);color:var(--red);border-color:rgba(248,81,73,.25);}
+.ctag.bl{background:var(--glow);color:var(--blue);border-color:rgba(88,166,255,.25);}
+.ctag.pu{background:rgba(188,140,255,.1);color:var(--purple);border-color:rgba(188,140,255,.25);}
+.cb{padding:12px 14px;flex:1;}
+.cb.p0{padding:0;}
+
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:3px;}
+.fl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);}
+.fi{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:6px 9px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:11px;outline:none;transition:border-color .2s;width:100%;}
+.fi:focus{border-color:var(--blue);}
+.fgrid{display:grid;gap:8px;margin-bottom:8px;}
+.g3{grid-template-columns:repeat(3,1fr);}
+.g2{grid-template-columns:repeat(2,1fr);}
+.btn{padding:6px 14px;border-radius:4px;border:none;font-family:'JetBrains Mono',monospace;font-size:11px;cursor:pointer;transition:all .15s;}
+.bp{background:var(--blue2);color:#fff;}.bp:hover{background:var(--blue);}
+.bg2b{background:var(--bg3);color:var(--text2);border:1px solid var(--border);}.bg2b:hover{color:var(--text);}
+.bd{background:rgba(248,81,73,.1);color:var(--red);border:1px solid rgba(248,81,73,.25);font-size:10px;padding:3px 8px;}
+.bwa{background:#25d366;color:#fff;border:none;}.bwa:hover{background:#22c15e;}
+.bpu{background:rgba(188,140,255,.1);color:var(--purple);border:1px solid rgba(188,140,255,.25);}
+
+/* TABLE */
+.tt{width:100%;border-collapse:collapse;font-size:11px;}
+.tt th{padding:7px 10px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);border-bottom:1px solid var(--border);text-align:left;font-weight:400;}
+.tt td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text2);}
+.tt tr:hover td{background:rgba(255,255,255,.015);}
+.tt tr:last-child td{border-bottom:none;}
+.bl2{background:rgba(63,185,80,.1);color:var(--green);padding:1px 6px;border-radius:3px;font-size:9px;}
+.bs2{background:rgba(248,81,73,.1);color:var(--red);padding:1px 6px;border-radius:3px;font-size:9px;}
+.pw{color:var(--green);font-weight:700;}.pl{color:var(--red);font-weight:700;}
+
+/* DOTS */
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.dot.h{background:var(--red);box-shadow:0 0 5px rgba(248,81,73,.6);}
+.dot.m{background:var(--yellow);}.dot.l{background:var(--green);}
+.ev{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:11px;}
+.ev:last-child{border-bottom:none;}
+
+/* CHECKLIST */
+.chk-item{display:flex;align-items:flex-start;gap:10px;padding:10px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);margin-bottom:7px;cursor:pointer;transition:all .2s;}
+.chk-item.checked{border-color:rgba(63,185,80,.3);background:rgba(63,185,80,.04);}
+.chk-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s;margin-top:1px;}
+.chk-item.checked .chk-box{border-color:var(--green);background:rgba(63,185,80,.2);color:var(--green);}
+.pb{height:4px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.pf{height:100%;border-radius:2px;transition:width .35s ease;}
+.pf.g{background:var(--green);}.pf.b{background:var(--blue);}.pf.y{background:var(--yellow);}
+
+/* EMOTION */
+.emo-row{display:flex;gap:7px;margin:8px 0;}
+.emo-btn{flex:1;padding:8px 4px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;transition:all .2s;}
+.emo-btn:hover{border-color:var(--border2);}
+.emo-btn.sel{border-color:var(--blue);background:var(--glow);}
+
+/* AI */
+.ai-bubble{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;margin-bottom:10px;position:relative;}
+.ai-bubble::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--purple);border-radius:3px 0 0 3px;}
+.ai-body{font-size:11px;color:var(--text2);line-height:1.7;}
+.ai-body strong{color:var(--text);}
+.ai-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.ai-tag{font-size:9px;padding:2px 7px;border-radius:3px;}
+.ai-tag.bull{background:rgba(63,185,80,.1);color:var(--green);border:1px solid rgba(63,185,80,.2);}
+.ai-tag.bear{background:rgba(248,81,73,.1);color:var(--red);border:1px solid rgba(248,81,73,.2);}
+.ai-tag.neu{background:rgba(88,166,255,.1);color:var(--blue);border:1px solid rgba(88,166,255,.2);}
+.spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* INSIGHT */
+.ins{display:flex;gap:10px;padding:10px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);margin-bottom:7px;font-size:11px;}
+.ins.warn{border-color:rgba(227,179,65,.2);background:rgba(227,179,65,.03);}
+.ins.good{border-color:rgba(63,185,80,.2);background:rgba(63,185,80,.03);}
+.ins.info{border-color:rgba(88,166,255,.2);background:rgba(88,166,255,.03);}
+.ins-ico{font-size:15px;flex-shrink:0;margin-top:1px;}
+.ins-txt{flex:1;line-height:1.6;color:var(--text2);}
+.ins-txt strong{color:var(--text);}
+
+/* LEADERBOARD */
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);font-size:11px;transition:background .15s;}
+.lb-row:hover{background:rgba(255,255,255,.015);}
+.lb-row:last-child{border-bottom:none;}
+.lb-rank{width:22px;font-weight:700;font-size:16px;}
+.lb-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;flex-shrink:0;}
+.lb-name{flex:1;font-weight:600;}
+.lb-me{color:var(--blue)!important;}
+
+/* SYM TABS */
+.sym-tabs{display:flex;gap:5px;flex-wrap:wrap;}
+.st{padding:3px 9px;border-radius:4px;font-size:10px;cursor:pointer;background:var(--bg3);color:var(--text2);border:1px solid var(--border);transition:all .15s;}
+.st:hover{color:var(--text);}
+.st.on{background:var(--glow);color:var(--blue);border-color:rgba(88,166,255,.4);}
+.cat-btn.on{color:var(--blue)!important;border-color:rgba(88,166,255,.4)!important;background:var(--glow)!important;}
+
+/* RISK */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.rbox{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;margin-top:10px;}
+.rr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:11px;}
+.rr:last-child{border-bottom:none;}
+.rl{color:var(--text2);}.rv{color:var(--text);font-weight:700;}
+.rv.big{font-size:18px;color:var(--blue);font-family:'Syne',sans-serif;}
+.rv.ok{color:var(--green);}.rv.bad{color:var(--red);}
+
+/* MOD */
+.mgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+.mod{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;cursor:pointer;transition:all .2s;user-select:none;}
+.mod:hover{border-color:var(--border2);}
+.mod.done{border-color:rgba(63,185,80,.3);}
+
+#eqCanvas{width:100%;height:130px;display:block;}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* ONBOARDING MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.overlay.hide{display:none;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:28px;width:420px;max-width:95vw;}
+.modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px;}
+.modal-sub{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:20px;}
+
+/* ── PWA INSTALL BANNER ─────────────────────────── */
+#pwa-banner{
+  display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+  z-index:9998;background:var(--bg2);border:1px solid var(--blue);border-radius:10px;
+  padding:12px 16px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 4px 24px rgba(0,0,0,.5);min-width:280px;max-width:380px;
+  animation:slideUp .3s ease;
+}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+#pwa-banner.hide{display:none!important;}
+.pwa-ico{font-size:28px;flex-shrink:0;}
+.pwa-txt{flex:1;}
+.pwa-txt strong{font-size:12px;color:var(--text);display:block;margin-bottom:2px;}
+.pwa-txt span{font-size:10px;color:var(--text3);}
+.pwa-btns{display:flex;flex-direction:column;gap:5px;flex-shrink:0;}
+.pwa-install{padding:5px 12px;background:var(--blue);color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;}
+.pwa-later{padding:3px 12px;background:none;color:var(--text3);border:none;font-size:9px;cursor:pointer;font-family:inherit;}
+
+/* ── PWA UPDATE TOAST ───────────────────────────── */
+#pwa-update{
+  display:none;position:fixed;top:56px;right:16px;z-index:9997;
+  background:var(--bg2);border:1px solid var(--green);border-radius:8px;
+  padding:10px 14px;display:flex;align-items:center;gap:10px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);font-size:11px;
+  animation:slideDown .3s ease;
+}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+#pwa-update.hide{display:none!important;}
+.pwa-update-txt{flex:1;color:var(--text2);}
+.pwa-update-txt strong{color:var(--green);display:block;margin-bottom:1px;}
+.pwa-reload{padding:4px 10px;background:rgba(63,185,80,.15);color:var(--green);border:1px solid rgba(63,185,80,.3);border-radius:4px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+/* Safe area para notch del iPhone */
+.main{padding-top:env(safe-area-inset-top);}
+body{padding-bottom:env(safe-area-inset-bottom);}
+</style>
+</head>
+<body>
+
+<!-- ONBOARDING MODAL -->
+<div class="overlay" id="onboarding">
+  <div class="modal">
+    <div style="font-size:32px;margin-bottom:10px">🚀</div>
+    <div class="modal-title">Bienvenido a TraderOS</div>
+    <div class="modal-sub">Para aparecer en el <strong>leaderboard del grupo</strong> y compartir trades, necesitás un nombre. El grupo lo verá.</div>
+    <div class="fg" style="margin-bottom:16px">
+      <label class="fl">Tu nombre (visible al grupo)</label>
+      <input class="fi" id="ob-name" placeholder="Ej: Carlos, Martina, Lucas…" style="font-size:14px;padding:10px 12px" autofocus>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)">
+      <div style="font-size:20px">📱</div>
+      <div style="font-size:11px;color:var(--text2)">El leaderboard y el feed de trades son <strong style="color:var(--text)">compartidos con todo el grupo</strong> en tiempo real. Cada uno abre el mismo archivo.</div>
+    </div>
+    <button class="btn bp" style="width:100%;padding:10px;font-size:13px" onclick="finishOnboarding()">Entrar al dashboard →</button>
+  </div>
+</div>
+
+<div class="shell">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">Trader<span>OS</span></div>
+    <div class="logo-ver">v3.1 · Pro + Multi-User</div>
+  </div>
+  <nav class="nav">
+    <div class="nsec">Principal</div>
+    <div class="ni on" onclick="go(this,'dashboard')"><span class="ni-ic">▣</span>Dashboard</div>
+    <div class="ni" onclick="go(this,'alertas')"><span class="ni-ic">🔔</span>Alertas IA<span class="nbadge warn" id="nb-alertas">0</span></div>
+    <div class="ni" onclick="go(this,'charts')"><span class="ni-ic">📊</span>Gráfico Live</div>
+    <div class="ni" onclick="go(this,'screener')"><span class="ni-ic">🔍</span>Screener</div>
+    <div class="nsec">Comunidad 👥</div>
+    <div class="ni" onclick="go(this,'leaderboard')"><span class="ni-ic">🏆</span>Leaderboard<span class="nbadge" id="nb-lb">0</span></div>
+    <div class="ni" onclick="go(this,'feed')"><span class="ni-ic">💬</span>Feed del Grupo<span class="nbadge" id="nb-feed">0</span></div>
+    <div class="nsec">Mi Trading</div>
+    <div class="ni" onclick="go(this,'checklist')"><span class="ni-ic">✅</span>Checklist Pre-Trade<span class="nbadge warn" id="nb-chk">!</span></div>
+    <div class="ni" onclick="go(this,'diario')"><span class="ni-ic">📋</span>Diario Inteligente<span class="nbadge" id="nb-trades">0</span></div>
+    <div class="ni" onclick="go(this,'patrones')"><span class="ni-ic">🧬</span>Análisis de Patrones</div>
+    <div class="ni" onclick="go(this,'riesgo')"><span class="ni-ic">🛡️</span>Calculadora Riesgo</div>
+    <div class="ni" onclick="go(this,'conversor')"><span class="ni-ic">💱</span>Conversor de Monedas<span class="nbadge" id="nb-fx">LIVE</span></div>
+    <div class="nsec">Educación</div>
+    <div class="ni" onclick="go(this,'ai')"><span class="ni-ic">🤖</span>Análisis IA</div>
+    <div class="ni" onclick="go(this,'aprendizaje')"><span class="ni-ic">🎓</span>Ruta de Aprendizaje</div>
+    <div class="ni" onclick="go(this,'calendario')"><span class="ni-ic">🗓️</span>Calendario</div>
+  </nav>
+  <div class="sb-bot">
+    <div style="display:flex;align-items:center;gap:8px">
+      <div id="user-av" style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#1f6feb,#bc8cff);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;font-family:'Syne',sans-serif;flex-shrink:0">T</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="sb-username">Trader</div>
+        <div style="font-size:9px;color:var(--text3)">Swing · Acciones + Cripto</div>
+      </div>
+      <button class="btn bg2b" style="font-size:9px;padding:2px 7px" onclick="changeUser()">✏️</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span class="ptitle" id="ptitle">Dashboard</span>
+      <div class="live-pill"><div class="pulse"></div>LIVE</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="chip" id="streak-chip">🔥 0 días</span>
+      <span class="chip" id="clock">--:--:--</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+  <!-- ═══ DASHBOARD ═══ -->
+  <div class="page on" id="p-dashboard">
+    <div class="kpi-row k4">
+      <div class="kpi g"><div class="kl">P&L Total</div><div class="kv g" id="k-pnl">$0.00</div><div class="ks">Del diario</div></div>
+      <div class="kpi b"><div class="kl">Win Rate</div><div class="kv b" id="k-wr">0%</div><div class="ks" id="k-wrs">0 ops</div></div>
+      <div class="kpi y"><div class="kl">Profit Factor</div><div class="kv y" id="k-pf">—</div><div class="ks">G ÷ P</div></div>
+      <div class="kpi r"><div class="kl">Max Drawdown</div><div class="kv r" id="k-dd">0%</div><div class="ks">Caída máx.</div></div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="ch"><span class="ct">Ticker Live — TradingView</span><span class="ctag bl">Datos reales</span></div>
+      <div class="cb p0">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+          {"symbols":[{"proName":"NASDAQ:NVDA","title":"NVIDIA"},{"proName":"NASDAQ:AAPL","title":"Apple"},{"proName":"NASDAQ:TSLA","title":"Tesla"},{"proName":"NASDAQ:MSFT","title":"MSFT"},{"proName":"NASDAQ:META","title":"Meta"},{"proName":"NASDAQ:GOOGL","title":"Google"},{"proName":"NASDAQ:AMZN","title":"Amazon"},{"proName":"NYSE:AMD","title":"AMD"},{"proName":"NYSE:COIN","title":"Coinbase"},{"proName":"NASDAQ:MSTR","title":"MicroStrategy"},{"proName":"AMEX:SPY","title":"S&P500"},{"proName":"NASDAQ:QQQ","title":"QQQ"},{"proName":"BINANCE:BTCUSDT","title":"Bitcoin"},{"proName":"BINANCE:ETHUSDT","title":"Ethereum"},{"proName":"BINANCE:SOLUSDT","title":"Solana"},{"proName":"BINANCE:BNBUSDT","title":"BNB"},{"proName":"BINANCE:XRPUSDT","title":"XRP"},{"proName":"BINANCE:DOGEUSDT","title":"DOGE"},{"proName":"FX:EURUSD","title":"EUR/USD"},{"proName":"FX:USDMXN","title":"USD/MXN"},{"proName":"TVC:GOLD","title":"Oro"},{"proName":"NYMEX:CL1!","title":"Petróleo"}],"showSymbolLogo":true,"isTransparent":true,"displayMode":"adaptive","colorTheme":"dark","locale":"es"}
+          </script>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="card col2">
+        <div class="ch"><span class="ct">Curva de Equity</span><span class="ctag" id="eq-tag">0 trades</span></div>
+        <div class="cb"><canvas id="eqCanvas"></canvas></div>
+      </div>
+      <div class="card col">
+        <div class="ch"><span class="ct">Mi Resumen</span></div>
+        <div class="cb p0" id="qstats"><div style="padding:28px;text-align:center;color:var(--text3);font-size:11px">Registrá operaciones<br>en el Diario.</div></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="card col">
+        <div class="ch"><span class="ct">Top del Grupo Hoy</span><span class="ctag gr" id="dash-lb-count">0 traders</span></div>
+        <div class="cb p0 scroll" id="dash-lb" style="max-height:160px"></div>
+      </div>
+      <div class="card col">
+        <div class="ch"><span class="ct">Último del Feed</span><span class="ctag bl">Grupo</span></div>
+        <div class="cb p0" id="dash-feed" style="max-height:160px;overflow-y:auto"></div>
+      </div>
+      <div class="card col">
+        <div class="ch"><span class="ct">Eventos Clave</span><span class="ctag rd">🔴 Hoy</span></div>
+        <div class="cb" id="mini-cal"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CHART ═══ -->
+  <div class="page" id="p-charts">
+    <div class="card" style="height:calc(100vh - 96px)">
+      <div class="ch" style="flex-direction:column;align-items:flex-start;gap:7px">
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+          <span class="ct">Gráfico Interactivo — TradingView</span>
+          <span class="ctag" id="sym-cur">NVDA</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+          <input id="sym-search" class="fi" style="max-width:160px;padding:4px 8px;font-size:10px" placeholder="Buscar símbolo…" onkeydown="if(event.key==='Enter')searchSym()">
+          <button class="btn bp" style="padding:4px 9px;font-size:10px" onclick="searchSym()">Ir →</button>
+          <button class="btn bg2b cat-btn on" style="font-size:9px;padding:3px 7px" onclick="setCat(this,'tech')">🖥 Tech</button>
+          <button class="btn bg2b cat-btn" style="font-size:9px;padding:3px 7px" onclick="setCat(this,'cripto')">₿ Cripto</button>
+          <button class="btn bg2b cat-btn" style="font-size:9px;padding:3px 7px" onclick="setCat(this,'forex')">💱 Forex</button>
+          <button class="btn bg2b cat-btn" style="font-size:9px;padding:3px 7px" onclick="setCat(this,'etf')">📦 ETFs</button>
+          <button class="btn bg2b cat-btn" style="font-size:9px;padding:3px 7px" onclick="setCat(this,'materias')">🛢 Materias</button>
+          <button class="btn bg2b cat-btn" style="font-size:9px;padding:3px 7px" onclick="setCat(this,'latam')">🌎 LatAm</button>
+        </div>
+        <div class="sym-tabs" id="sym-tabs"></div>
+      </div>
+      <div class="cb p0" style="flex:1;min-height:0">
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+          <div id="tv_chart" style="height:100%;width:100%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SCREENER ═══ -->
+  <div class="page" id="p-screener">
+    <div class="row" style="height:calc(50vh - 60px)">
+      <div class="card col" style="height:100%">
+        <div class="ch"><span class="ct">Screener — Acciones USA</span><span class="ctag bl">Live</span></div>
+        <div class="cb p0" style="flex:1;min-height:0">
+          <div class="tradingview-widget-container" style="height:100%;width:100%">
+            <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+            {"width":"100%","height":"100%","defaultColumn":"overview","defaultScreen":"most_capitalized","market":"america","showToolbar":true,"colorTheme":"dark","locale":"es","isTransparent":true}
+            </script>
+          </div>
+        </div>
+      </div>
+      <div class="card col" style="height:100%">
+        <div class="ch"><span class="ct">Screener — Cripto</span><span class="ctag bl">Live</span></div>
+        <div class="cb p0" style="flex:1;min-height:0">
+          <div class="tradingview-widget-container" style="height:100%;width:100%">
+            <div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-screener.js" async>
+            {"width":"100%","height":"100%","defaultColumn":"overview","defaultScreen":"general","market":"crypto","showToolbar":true,"colorTheme":"dark","locale":"es","isTransparent":true}
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="ch"><span class="ct">Market Overview — Índices · Cripto · Tech</span></div>
+      <div class="cb p0">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+          {"colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"es","isTransparent":true,"showSymbolLogo":true,"width":"100%","height":"360","tabs":[{"title":"Índices","symbols":[{"s":"FOREXCOM:SPXUSD","d":"S&P 500"},{"s":"FOREXCOM:NSXUSD","d":"NASDAQ 100"},{"s":"FOREXCOM:DJI","d":"Dow Jones"},{"s":"INDEX:NKY","d":"Nikkei"},{"s":"INDEX:DEU40","d":"DAX"}]},{"title":"Cripto","symbols":[{"s":"BINANCE:BTCUSDT","d":"BTC"},{"s":"BINANCE:ETHUSDT","d":"ETH"},{"s":"BINANCE:SOLUSDT","d":"SOL"},{"s":"BINANCE:BNBUSDT","d":"BNB"},{"s":"BINANCE:XRPUSDT","d":"XRP"}]},{"title":"Tech USA","symbols":[{"s":"NASDAQ:NVDA"},{"s":"NASDAQ:AAPL"},{"s":"NASDAQ:TSLA"},{"s":"NASDAQ:MSFT"},{"s":"NASDAQ:META"}]}]}
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LEADERBOARD ═══ -->
+  <div class="page" id="p-leaderboard">
+    <div class="kpi-row k3">
+      <div class="kpi g"><div class="kl">Tu Win Rate</div><div class="kv g" id="lb-wr">0%</div><div class="ks">Tu rendimiento</div></div>
+      <div class="kpi b"><div class="kl">Tu P&L</div><div class="kv b" id="lb-pnl">$0</div><div class="ks">Acumulado</div></div>
+      <div class="kpi y"><div class="kl">Tu Posición</div><div class="kv y" id="lb-rank">#—</div><div class="ks">En el grupo</div></div>
+    </div>
+    <div class="row">
+      <div class="card col2">
+        <div class="ch">
+          <span class="ct">🏆 Leaderboard del Grupo</span>
+          <div style="display:flex;gap:6px">
+            <span class="ctag bl" id="lb-count-tag">0 traders</span>
+            <button class="btn bwa" style="font-size:10px;padding:3px 10px" onclick="shareToWhatsApp('leaderboard')">📱 WhatsApp</button>
+          </div>
+        </div>
+        <div class="cb p0" id="lb-list" style="max-height:420px;overflow-y:auto">
+          <div style="padding:28px;text-align:center;color:var(--text3);font-size:11px">Cargando leaderboard...</div>
+        </div>
+        <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px">
+          <span style="font-size:10px;color:var(--text3);flex:1">📲 Mandá este link por WhatsApp para que el grupo se una</span>
+          <button class="btn bg2b" style="font-size:9px;padding:3px 8px" onclick="copyLink()">📋 Copiar link</button>
+          <button class="btn bwa" style="font-size:9px;padding:3px 8px" onclick="inviteWhatsApp()">Invitar 📱</button>
+        </div>
+      </div>
+      <div class="card col">
+        <div class="ch"><span class="ct">Mis Stats para el Grupo</span></div>
+        <div class="cb">
+          <div style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.6">Tus estadísticas se sincronizan automáticamente con el leaderboard cada vez que registrás un trade.</div>
+          <div id="my-stats-box"></div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+            <button class="btn bp" style="width:100%;margin-bottom:6px" onclick="publishMyStats()">🔄 Sincronizar mis stats</button>
+            <button class="btn bwa" style="width:100%" onclick="shareToWhatsApp('mystats')">📱 Compartir mis stats por WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FEED ═══ -->
+  <div class="page" id="p-feed">
+    <div class="row">
+      <div class="card col">
+        <div class="ch">
+          <span class="ct">💬 Compartir Trade con el Grupo</span>
+          <button class="btn bwa" style="font-size:10px;padding:3px 10px" onclick="shareToWhatsApp('feed')">📱 WhatsApp</button>
+        </div>
+        <div class="cb">
+          <div class="fgrid g3" style="margin-bottom:8px">
+            <div class="fg"><label class="fl">Activo</label><input class="fi" id="share-asset" placeholder="NVDA, BTC…"></div>
+            <div class="fg">
+              <label class="fl">Resultado</label>
+              <select class="fi" id="share-result">
+                <option value="win">✅ Ganadora</option>
+                <option value="loss">❌ Perdedora</option>
+                <option value="be">➖ Break Even</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label class="fl">P&L ($)</label>
+              <input class="fi" id="share-pnl" type="number" placeholder="±0.00">
+            </div>
+          </div>
+          <div class="fg" style="margin-bottom:10px">
+            <label class="fl">Setup visto + Aprendizaje (¿qué harías diferente?)</label>
+            <textarea class="fi" id="share-note" rows="3" placeholder="Ej: Ruptura de resistencia en NVDA con volumen 3x. Entré demasiado tarde, próxima vez entro en el retroceso a la zona rota…" style="resize:vertical;line-height:1.5"></textarea>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn bp" onclick="postFeed()">📤 Publicar en el feed</button>
+            <button class="btn bwa" onclick="postAndWhatsApp()">📱 Publicar + enviar por WhatsApp</button>
+          </div>
+        </div>
+      </div>
+      <div class="card col">
+        <div class="ch">
+          <span class="ct">Feed del Grupo</span>
+          <span class="ctag bl" id="feed-count-tag">0 posts</span>
+        </div>
+        <div class="cb p0" style="max-height:500px;overflow-y:auto" id="feed-list">
+          <div style="padding:28px;text-align:center;color:var(--text3);font-size:11px">Cargando feed...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CHECKLIST ═══ -->
+  <div class="page" id="p-checklist">
+    <div class="row">
+      <div class="card col2">
+        <div class="ch"><span class="ct">Checklist Pre-Trade — Anti Emocional</span><span class="ctag" id="chk-tag">0 / 8</span></div>
+        <div class="cb">
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">Completá el <strong>100%</strong> antes de registrar cualquier operación. Si no podés marcar algún ítem, <strong style="color:var(--red)">no operes</strong>.</p>
+          <div class="pb" style="margin-bottom:6px"><div class="pf g" id="chk-bar" style="width:0%"></div></div>
+          <div style="font-size:10px;color:var(--text3);margin-bottom:14px" id="chk-pct">0% completado</div>
+          <div id="chk-items"></div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn bp" id="btn-open-diario" onclick="go(document.querySelector('.ni[onclick*=diario]'),'diario')" disabled style="opacity:.4">✅ Lista completa — Ir al diario</button>
+            <button class="btn bg2b" onclick="resetChk()">Resetear</button>
+          </div>
+        </div>
+      </div>
+      <div class="card col">
+        <div class="ch"><span class="ct">Estado Emocional del Día</span></div>
+        <div class="cb">
+          <p style="font-size:11px;color:var(--text2);margin-bottom:10px">¿Cómo te sentís para operar hoy?</p>
+          <div class="emo-row" id="emo-btns"></div>
+          <div style="font-size:11px;margin-top:10px;padding:10px;border-radius:5px;border:1px solid var(--border);background:var(--bg3)" id="emo-feedback">Seleccioná tu estado.</div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px">Reglas de Hoy</div>
+            <div style="font-size:11px;color:var(--text2);line-height:2">
+              📌 Máx. 3 operaciones por día<br>
+              📌 No muevas el stop-loss<br>
+              📌 3% de pérdida → cerrás la plataforma<br>
+              📌 Registrá cada trade antes del siguiente
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DIARIO ═══ -->
+  <div class="page" id="p-diario">
+    <div class="card" style="margin-bottom:12px">
+      <div class="ch"><span class="ct">Registrar Operación</span><span class="ctag bl">Diario Inteligente</span></div>
+      <div class="cb">
+        <div class="fgrid g3">
+          <div class="fg"><label class="fl">Activo</label><input class="fi" id="ta" placeholder="NVDA, BTC…"></div>
+          <div class="fg"><label class="fl">Dirección</label><select class="fi" id="td"><option>LONG</option><option>SHORT</option></select></div>
+          <div class="fg"><label class="fl">Mercado</label><select class="fi" id="tm"><option>Acciones</option><option>Cripto</option><option>Forex</option><option>Futuros</option></select></div>
+          <div class="fg"><label class="fl">Entrada ($)</label><input class="fi" id="te" type="number" placeholder="0.00"></div>
+          <div class="fg"><label class="fl">Salida ($)</label><input class="fi" id="tx" type="number" placeholder="0.00"></div>
+          <div class="fg"><label class="fl">P&L ($)</label><input class="fi" id="tpnl" type="number" placeholder="±0.00"></div>
+        </div>
+        <div class="fgrid g3">
+          <div class="fg">
+            <label class="fl">Setup / Patrón</label>
+            <select class="fi" id="tsetup">
+              <option value="">— Elegí —</option>
+              <option>Ruptura de resistencia</option><option>Rebote en soporte</option>
+              <option>Pullback a EMA</option><option>Ruptura con volumen</option>
+              <option>Reversión en extremo</option><option>Seguimiento de tendencia</option>
+              <option>Patrón de velas</option><option>Otro</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="fl">Horario</label>
+            <select class="fi" id="ttime">
+              <option>Apertura (9:30-10:30)</option><option>Mañana (10:30-12:00)</option>
+              <option>Mediodía (12:00-14:00)</option><option>Tarde (14:00-16:00)</option>
+              <option>Cierre (16:00-16:30)</option><option>Pre/After market</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="fl">Estado emocional</label>
+            <select class="fi" id="temo">
+              <option value="5">😎 5 — En zona</option>
+              <option value="4">🙂 4 — Calmado</option>
+              <option value="3">😐 3 — Neutro</option>
+              <option value="2">😟 2 — Ansioso</option>
+              <option value="1">😤 1 — Estrés/FOMO</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg" style="margin-bottom:8px">
+          <label class="fl">Notas — Setup visto, por qué entraste, ¿seguiste el plan?</label>
+          <input class="fi" id="tn" placeholder="Ej: Ruptura de $190 con volumen 3x, RSI en 62, EMA20 como soporte. Salí en $197 como planeé.">
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn bp" onclick="addTrade()">＋ Registrar</button>
+          <button class="btn bg2b" onclick="clearF()">Limpiar</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">Historial</span><span class="ctag" id="tbl-badge">0 trades</span></div>
+      <div class="cb p0" style="overflow:auto;max-height:380px">
+        <table class="tt">
+          <thead><tr><th>Fecha</th><th>Activo</th><th>Dir</th><th>Setup</th><th>Emo</th><th>P&L</th><th>Notas</th><th></th></tr></thead>
+          <tbody id="tbod"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PATRONES ═══ -->
+  <div class="page" id="p-patrones">
+    <div class="kpi-row k5">
+      <div class="kpi g"><div class="kl">Mejor Día</div><div class="kv g" style="font-size:16px" id="pat-bd">—</div><div class="ks">Mayor P&L</div></div>
+      <div class="kpi r"><div class="kl">Peor Día</div><div class="kv r" style="font-size:16px" id="pat-wd">—</div><div class="ks">Menor P&L</div></div>
+      <div class="kpi b"><div class="kl">Mejor Setup</div><div class="kv b" style="font-size:11px" id="pat-bs">—</div><div class="ks">Más rentable</div></div>
+      <div class="kpi p"><div class="kl">Mejor Estado</div><div class="kv p" id="pat-be">—</div><div class="ks">Mayor WR</div></div>
+      <div class="kpi y"><div class="kl">Mejor Horario</div><div class="kv y" style="font-size:11px" id="pat-bt">—</div><div class="ks">Más rentable</div></div>
+    </div>
+    <div class="row">
+      <div class="card col"><div class="ch"><span class="ct">P&L por Día de la Semana</span></div><div class="cb" id="pat-days"></div></div>
+      <div class="card col"><div class="ch"><span class="ct">Win Rate por Setup</span></div><div class="cb" id="pat-setups"></div></div>
+    </div>
+    <div class="row">
+      <div class="card col"><div class="ch"><span class="ct">Estado Emocional vs Resultados</span></div><div class="cb" id="pat-emos"></div></div>
+      <div class="card col"><div class="ch"><span class="ct">P&L por Mercado</span></div><div class="cb" id="pat-mkts"></div></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">🧬 Insights — Lo que tus datos te dicen</span><span class="ctag pu">Auto-generados</span></div>
+      <div class="cb" id="pat-insights"></div>
+    </div>
+  </div>
+
+  <!-- ═══ RIESGO ═══ -->
+  <div class="page" id="p-riesgo">
+    <div class="row">
+      <div class="card col">
+        <div class="ch"><span class="ct">Calculadora de Position Sizing</span></div>
+        <div class="cb">
+          <div class="cgrid">
+            <div class="fg"><label class="fl">Capital Total ($)</label><input class="fi" id="cc" type="number" value="10000" oninput="calcR()"></div>
+            <div class="fg"><label class="fl">Riesgo por Trade (%)</label><input class="fi" id="cr" type="number" value="1" step="0.1" oninput="calcR()"></div>
+            <div class="fg"><label class="fl">Precio Entrada ($)</label><input class="fi" id="ce" type="number" value="190" oninput="calcR()"></div>
+            <div class="fg"><label class="fl">Stop-Loss ($)</label><input class="fi" id="cs" type="number" value="185" oninput="calcR()"></div>
+            <div class="fg"><label class="fl">Take-Profit ($)</label><input class="fi" id="ctp" type="number" value="200" oninput="calcR()"></div>
+            <div class="fg"><label class="fl">R:R Mínimo</label><input class="fi" id="cm" type="number" value="2" step="0.1" oninput="calcR()"></div>
+          </div>
+          <div class="rbox">
+            <div class="rr"><span class="rl">💰 Monto a Arriesgar</span><span class="rv" id="r-amt">$100.00</span></div>
+            <div class="rr"><span class="rl">📦 Position Size</span><span class="rv big" id="r-sz">20 uds.</span></div>
+            <div class="rr"><span class="rl">📉 Stop Distance</span><span class="rv" id="r-sl">$5.00</span></div>
+            <div class="rr"><span class="rl">📈 TP Distance</span><span class="rv" id="r-tp">$10.00</span></div>
+            <div class="rr"><span class="rl">⚖️ Ratio R:R</span><span class="rv" id="r-rr">1:2.00</span></div>
+            <div class="rr"><span class="rl">✅ ¿Operar?</span><span class="rv ok" id="r-ok">SÍ — Válida</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card col">
+        <div class="ch"><span class="ct">Las 6 Reglas de Oro</span></div>
+        <div class="cb" id="rules"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ AI ═══ -->
+  <div class="page" id="p-ai">
+    <div class="row">
+      <div class="card col2">
+        <div class="ch">
+          <span class="ct">🤖 Análisis de Mercado con IA</span>
+          <div style="display:flex;gap:6px">
+            <select class="fi" id="ai-sym" style="padding:3px 8px;font-size:10px;width:130px">
+              <option>NVDA</option><option>AAPL</option><option>TSLA</option><option>META</option>
+              <option>BTC</option><option>ETH</option><option>SOL</option><option>SPY / S&P 500</option>
+            </select>
+            <button class="btn bpu" onclick="runAI()" id="ai-btn">🤖 Analizar</button>
+            <button class="btn bwa" onclick="shareAItoWhatsApp()" id="ai-wa-btn" style="display:none">📱 WA</button>
+          </div>
+        </div>
+        <div class="cb" style="overflow-y:auto;max-height:500px" id="ai-out">
+          <div class="ai-bubble">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <span style="font-size:16px">🤖</span>
+              <span style="font-size:11px;font-weight:700;color:var(--purple)">TraderOS AI</span>
+            </div>
+            <div class="ai-body">Seleccioná un activo y presioná <strong>Analizar</strong>. Vas a recibir: sesgo direccional, niveles técnicos clave, contexto fundamental, y la sección de <strong>Aprendizaje</strong> explicando el razonamiento para que puedas replicarlo.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card col">
+        <div class="ch"><span class="ct">Configuración IA</span></div>
+        <div class="cb">
+          <div class="ins info"><span class="ins-ico">🤖</span><div class="ins-txt">Sin API key, los análisis son <strong>demos educativos</strong> pre-escritos. Con tu Anthropic API key, son <strong>análisis en tiempo real</strong> con contexto actual del mercado.</div></div>
+          <div class="fg" style="margin-bottom:8px">
+            <label class="fl">Anthropic API Key (opcional)</label>
+            <input class="fi" id="api-key" type="password" placeholder="sk-ant-…">
+          </div>
+          <button class="btn bp" onclick="saveKey()" style="margin-bottom:14px">Guardar key</button>
+          <div style="padding-top:12px;border-top:1px solid var(--border)">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px">Roadmap IA → N8N</div>
+            <div style="font-size:11px;color:var(--text2);line-height:2">
+              ✅ Análisis educativo (esta versión)<br>
+              🔜 Análisis automático cada hora (N8N)<br>
+              🔜 Paper trading con explicaciones<br>
+              🔜 Alertas por WhatsApp automáticas<br>
+              🔜 Conexión Binance API (lectura)<br>
+              🔜 Cocos Capital API (portfolio)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ APRENDIZAJE ═══ -->
+  <div class="page" id="p-aprendizaje">
+    <div class="kpi-row k3">
+      <div class="kpi b"><div class="kl">Progreso</div><div class="kv b" id="lp">0%</div><div class="ks" id="lps">0/10</div></div>
+      <div class="kpi g"><div class="kl">Completados</div><div class="kv g" id="ld">0</div><div class="ks">módulos</div></div>
+      <div class="kpi y"><div class="kl">Próximo</div><div class="kv y" id="ln" style="font-size:11px">—</div><div class="ks">en progreso</div></div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">Ruta de Aprendizaje — @nosoyliquidez</span><span class="ctag">Click = avanzar</span></div>
+      <div class="cb"><div class="mgrid" id="mod-grid"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══ CALENDARIO ═══ -->
+  <div class="page" id="p-calendario">
+    <div class="card">
+      <div class="ch"><span class="ct">Calendario Económico — TradingView</span><span class="ctag bl">Live</span></div>
+      <div class="cb p0">
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events-calendar.js" async>
+          {"colorTheme":"dark","isTransparent":true,"width":"100%","height":"620","locale":"es","importanceFilter":"-1,0,1","countryFilter":"ar,us,eu,gb,jp,mx,br,cn"}
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CONVERSOR ═══ -->
+  <div class="page" id="p-conversor">
+
+    <!-- KPIs dólar -->
+    <div class="kpi-row k4" id="fx-kpis">
+      <div class="kpi b"><div class="kl">USD Oficial</div><div class="kv b" id="fx-oficial">—</div><div class="ks">Banco Nación</div></div>
+      <div class="kpi g"><div class="kl">USD Blue</div><div class="kv g" id="fx-blue">—</div><div class="ks">Mercado informal</div></div>
+      <div class="kpi y"><div class="kl">USD MEP</div><div class="kv y" id="fx-mep">—</div><div class="ks">Bolsa (AL30)</div></div>
+      <div class="kpi p"><div class="kl">USD CCL</div><div class="kv p" id="fx-ccl">—</div><div class="ks">Cable / GD30</div></div>
+    </div>
+
+    <div class="row">
+      <!-- Calculadora principal -->
+      <div class="card col">
+        <div class="ch">
+          <span class="ct">💱 Calculadora de Conversión</span>
+          <span class="ctag bl" id="fx-update-tag">Actualizando...</span>
+        </div>
+        <div class="cb">
+          <!-- Monto + moneda origen -->
+          <div style="display:flex;gap:8px;margin-bottom:12px;align-items:flex-end">
+            <div class="fg" style="flex:2">
+              <label class="fl">Monto</label>
+              <input class="fi" id="fx-amount" type="number" value="100" style="font-size:18px;padding:10px 12px;font-weight:700" oninput="convertFX()">
+            </div>
+            <div class="fg" style="flex:1">
+              <label class="fl">Desde</label>
+              <select class="fi" id="fx-from" style="font-size:12px" onchange="convertFX()">
+                <option value="USD">🇺🇸 USD</option>
+                <option value="ARS" selected>🇦🇷 ARS</option>
+                <option value="EUR">🇪🇺 EUR</option>
+                <option value="BRL">🇧🇷 BRL</option>
+                <option value="MXN">🇲🇽 MXN</option>
+                <option value="CLP">🇨🇱 CLP</option>
+                <option value="COP">🇨🇴 COP</option>
+                <option value="UYU">🇺🇾 UYU</option>
+                <option value="PEN">🇵🇪 PEN</option>
+                <option value="BTC">₿ BTC</option>
+                <option value="ETH">Ξ ETH</option>
+              </select>
+            </div>
+            <button class="btn bg2b" style="padding:8px 12px;font-size:16px;margin-bottom:0" onclick="swapFX()" title="Invertir">⇄</button>
+            <div class="fg" style="flex:1">
+              <label class="fl">Hacia</label>
+              <select class="fi" id="fx-to" style="font-size:12px" onchange="convertFX()">
+                <option value="USD" selected>🇺🇸 USD</option>
+                <option value="ARS">🇦🇷 ARS</option>
+                <option value="EUR">🇪🇺 EUR</option>
+                <option value="BRL">🇧🇷 BRL</option>
+                <option value="MXN">🇲🇽 MXN</option>
+                <option value="CLP">🇨🇱 CLP</option>
+                <option value="COP">🇨🇴 COP</option>
+                <option value="UYU">🇺🇾 UYU</option>
+                <option value="PEN">🇵🇪 PEN</option>
+                <option value="BTC">₿ BTC</option>
+                <option value="ETH">Ξ ETH</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Resultado grande -->
+          <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:20px;text-align:center;margin-bottom:12px">
+            <div style="font-size:11px;color:var(--text3);margin-bottom:6px" id="fx-formula">— → —</div>
+            <div style="font-size:36px;font-weight:800;font-family:'Syne',sans-serif;color:var(--blue)" id="fx-result">—</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:4px" id="fx-rate-label">Cargando tasas...</div>
+          </div>
+
+          <!-- Tipo de cambio ARS selector -->
+          <div style="margin-bottom:10px">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:6px">Tipo de cambio ARS a usar</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap" id="fx-tipo-btns">
+              <button class="btn bg2b fx-tipo on" data-tipo="blue" onclick="setTipo(this,'blue')" style="font-size:10px;padding:4px 10px">💵 Blue</button>
+              <button class="btn bg2b fx-tipo" data-tipo="oficial" onclick="setTipo(this,'oficial')" style="font-size:10px;padding:4px 10px">🏦 Oficial</button>
+              <button class="btn bg2b fx-tipo" data-tipo="mep" onclick="setTipo(this,'mep')" style="font-size:10px;padding:4px 10px">📈 MEP</button>
+              <button class="btn bg2b fx-tipo" data-tipo="ccl" onclick="setTipo(this,'ccl')" style="font-size:10px;padding:4px 10px">🔗 CCL</button>
+            </div>
+          </div>
+
+          <!-- Conversión rápida -->
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:6px">Montos rápidos (USD)</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap">
+            <button class="btn bg2b" style="font-size:10px;padding:3px 9px" onclick="setAmt(1)">$1</button>
+            <button class="btn bg2b" style="font-size:10px;padding:3px 9px" onclick="setAmt(10)">$10</button>
+            <button class="btn bg2b" style="font-size:10px;padding:3px 9px" onclick="setAmt(100)">$100</button>
+            <button class="btn bg2b" style="font-size:10px;padding:3px 9px" onclick="setAmt(500)">$500</button>
+            <button class="btn bg2b" style="font-size:10px;padding:3px 9px" onclick="setAmt(1000)">$1.000</button>
+            <button class="btn bg2b" style="font-size:10px;padding:3px 9px" onclick="setAmt(5000)">$5.000</button>
+            <button class="btn bg2b" style="font-size:10px;padding:3px 9px" onclick="setAmt(10000)">$10.000</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de todas las monedas -->
+      <div class="card col">
+        <div class="ch">
+          <span class="ct">Tabla — 1 USD en todo</span>
+          <button class="btn bg2b" style="font-size:9px;padding:3px 8px" onclick="fetchRates(true)">🔄 Actualizar</button>
+        </div>
+        <div class="cb p0" style="overflow-y:auto;max-height:500px" id="fx-table">
+          <div style="padding:28px;text-align:center;color:var(--text3);font-size:11px">Cargando tasas de cambio...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Historial de conversiones -->
+    <div class="card">
+      <div class="ch"><span class="ct">Historial de conversiones</span><span class="ctag" id="fx-hist-count">0</span></div>
+      <div class="cb p0" style="max-height:160px;overflow-y:auto" id="fx-history">
+        <div style="padding:16px;text-align:center;color:var(--text3);font-size:11px">Las conversiones que hagás aparecen acá.</div>
+      </div>
+    </div>
+
+  </div><!-- /conversor -->
+
+  <!-- ═══ ALERTAS IA ═══ -->
+  <div class="page" id="p-alertas">
+
+    <!-- Status bar -->
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:7px">
+      <div id="al-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--text3);flex-shrink:0"></div>
+      <span style="font-size:11px;color:var(--text2);flex:1" id="al-status-txt">Motor detenido — configurá tu API key y presioná Iniciar</span>
+      <span style="font-size:10px;color:var(--text3)" id="al-next-scan">—</span>
+      <button class="btn bp" id="al-start-btn" onclick="toggleScanner()">▶ Iniciar Scanner</button>
+      <button class="btn bwa" onclick="shareAlertsWA()" style="font-size:10px;padding:5px 10px">📱 WA</button>
+    </div>
+
+    <div class="row">
+      <!-- Config panel -->
+      <div class="card" style="width:280px;flex-shrink:0">
+        <div class="ch"><span class="ct">⚙️ Configuración</span></div>
+        <div class="cb" style="overflow-y:auto;max-height:calc(100vh - 200px)">
+
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px">API Key (requerida)</div>
+          <div class="fg" style="margin-bottom:10px">
+            <input class="fi" id="al-key" type="password" placeholder="sk-ant-…" style="font-size:10px">
+            <div style="font-size:9px;color:var(--text3);margin-top:3px">Sin key funciona en modo demo</div>
+          </div>
+          <button class="btn bp" style="width:100%;margin-bottom:14px;font-size:10px" onclick="saveAlKey()">Guardar key</button>
+
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px">Intervalo de escaneo</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px" id="al-interval-btns">
+            <button class="btn bg2b al-ivl" data-min="5"  onclick="setInterval2(this,5)"  style="font-size:10px;padding:3px 8px">5 min</button>
+            <button class="btn bg2b al-ivl on" data-min="15" onclick="setInterval2(this,15)" style="font-size:10px;padding:3px 8px">15 min</button>
+            <button class="btn bg2b al-ivl" data-min="30" onclick="setInterval2(this,30)" style="font-size:10px;padding:3px 8px">30 min</button>
+            <button class="btn bg2b al-ivl" data-min="60" onclick="setInterval2(this,60)" style="font-size:10px;padding:3px 8px">1 hora</button>
+          </div>
+
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px">Mercados a monitorear</div>
+          <div id="al-watchlist" style="margin-bottom:10px"></div>
+          <div style="display:flex;gap:5px;margin-bottom:14px">
+            <input class="fi" id="al-add-sym" placeholder="Ej: MELI, SOL…" style="font-size:10px;flex:1" onkeydown="if(event.key==='Enter')addToWatchlist()">
+            <button class="btn bp" style="padding:5px 9px;font-size:11px" onclick="addToWatchlist()">＋</button>
+          </div>
+
+          <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px">Filtros de alerta</div>
+          <div style="font-size:11px;color:var(--text2);line-height:2.2">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="f-breakout" checked style="accent-color:var(--blue)"> Rupturas de resistencia
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="f-bounce" checked style="accent-color:var(--blue)"> Rebotes en soporte
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="f-rsi" checked style="accent-color:var(--blue)"> RSI extremo (overbought/oversold)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="f-macd" checked style="accent-color:var(--blue)"> MACD crossover
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="f-volume" checked style="accent-color:var(--blue)"> Volumen anómalo (2x+)
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+              <input type="checkbox" id="f-trend" checked style="accent-color:var(--blue)"> Seguimiento de tendencia
+            </label>
+          </div>
+
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+            <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:6px">Mínimo R:R para alertar</div>
+            <div style="display:flex;align-items:center;gap:8px">
+              <input class="fi" id="al-min-rr" type="number" value="2" step="0.5" style="width:70px;font-size:11px">
+              <span style="font-size:11px;color:var(--text2)">mínimo 1:X</span>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;padding:10px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)">
+            <div style="font-size:9px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:1px">N8N Webhook (opcional)</div>
+            <input class="fi" id="al-webhook" placeholder="https://tu-n8n.railway.app/webhook/…" style="font-size:9px;margin-bottom:5px">
+            <div style="font-size:9px;color:var(--text3)">Cuando configures N8N, pegá la URL acá y las alertas llegarán por WhatsApp automáticamente.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alertas panel -->
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px">
+
+        <!-- KPIs -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+          <div class="kpi g"><div class="kl">Alertas Alcistas</div><div class="kv g" style="font-size:22px" id="al-bull-count">0</div><div class="ks">Señales de compra</div></div>
+          <div class="kpi r"><div class="kl">Alertas Bajistas</div><div class="kv r" style="font-size:22px" id="al-bear-count">0</div><div class="ks">Señales de venta</div></div>
+          <div class="kpi y"><div class="kl">Activos Escaneados</div><div class="kv y" style="font-size:22px" id="al-scanned">0</div><div class="ks">En esta sesión</div></div>
+          <div class="kpi b"><div class="kl">Precisión Histórica</div><div class="kv b" style="font-size:22px" id="al-accuracy">—</div><div class="ks">Alertas confirmadas</div></div>
+        </div>
+
+        <!-- Feed de alertas -->
+        <div class="card" style="flex:1">
+          <div class="ch">
+            <span class="ct">🔔 Feed de Alertas en Tiempo Real</span>
+            <div style="display:flex;gap:6px;align-items:center">
+              <select class="fi" id="al-filter" style="font-size:10px;padding:3px 8px;width:auto" onchange="filterAlerts()">
+                <option value="all">Todas</option>
+                <option value="bull">Solo alcistas</option>
+                <option value="bear">Solo bajistas</option>
+                <option value="pending">Sin responder</option>
+              </select>
+              <button class="btn bg2b" style="font-size:9px;padding:3px 7px" onclick="clearAlerts()">🗑 Limpiar</button>
+            </div>
+          </div>
+          <div style="overflow-y:auto;max-height:calc(100vh - 380px)" id="al-feed">
+            <div style="padding:48px;text-align:center;color:var(--text3)">
+              <div style="font-size:32px;margin-bottom:12px">🔔</div>
+              <div style="font-size:13px;font-weight:700;margin-bottom:6px;color:var(--text2)">Scanner detenido</div>
+              <div style="font-size:11px;line-height:1.7">Configurá tu watchlist, agregá la API key<br>y presioná <strong style="color:var(--blue)">▶ Iniciar Scanner</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /alertas -->
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<script>
+// ══════════════════════════════════════════════════
+// STATE — todo lo del usuario en localStorage
+// Leaderboard y feed en window.storage (compartido)
+// ══════════════════════════════════════════════════
+const LS = {
+  get: (k,d) => { try{ const v=localStorage.getItem('tos_'+k); return v!==null?JSON.parse(v):d; }catch(e){return d;} },
+  set: (k,v) => { try{ localStorage.setItem('tos_'+k,JSON.stringify(v)); }catch(e){} }
+};
+
+let USERNAME = LS.get('username','');
+let MY_TRADES = LS.get('trades',[]);
+let MY_MODULES = LS.get('mods', defaultMods());
+let MY_CHK = LS.get('chk',{});
+let MY_EMO = LS.get('emo',0);
+let MY_STREAK = LS.get('streak',0);
+let API_KEY = LS.get('key','');
+let lastAiAnalysis = '';
+
+function defaultMods(){return[
+  {id:0,name:"Introducción al Trading",desc:"Tipos de mercados e instrumentos base.",ico:"📚",p:0,c:"b"},
+  {id:1,name:"Cómo Funciona el Mercado",desc:"Bull/Bear, participantes, oferta y demanda.",ico:"🌍",p:0,c:"b"},
+  {id:2,name:"Análisis Fundamental",desc:"Earnings, PIB, tasas de interés, macro.",ico:"📊",p:0,c:"y"},
+  {id:3,name:"Velas Japonesas",desc:"Candlesticks y todos los patrones clave.",ico:"🕯️",p:0,c:"y"},
+  {id:4,name:"Soportes y Resistencias",desc:"Niveles clave y zonas de oferta/demanda.",ico:"📐",p:0,c:"y"},
+  {id:5,name:"Indicadores Técnicos",desc:"RSI, MACD, Medias Móviles, Bollinger.",ico:"📉",p:0,c:"b"},
+  {id:6,name:"Patrones de Precio",desc:"H&S, doble techo, triángulos, banderas.",ico:"🔺",p:0,c:"b"},
+  {id:7,name:"Gestión de Riesgo",desc:"Position sizing, stop-loss, ratio R:R.",ico:"🛡️",p:0,c:"g"},
+  {id:8,name:"Desarrollo de Estrategia",desc:"Backtesting, plan de trading, journaling.",ico:"⚙️",p:0,c:"g"},
+  {id:9,name:"Psicología del Trading",desc:"Control emocional, disciplina, mindset.",ico:"🧠",p:0,c:"g"},
+];}
+
+// ══════════════════════════════════════════════════
+// ONBOARDING
+// ══════════════════════════════════════════════════
+function finishOnboarding(){
+  const name = document.getElementById('ob-name').value.trim();
+  if(!name){ document.getElementById('ob-name').focus(); return; }
+  USERNAME = name;
+  LS.set('username', name);
+  document.getElementById('onboarding').classList.add('hide');
+  initUI();
+  publishMyStats();
+}
+function changeUser(){
+  const n = prompt('Nuevo nombre:', USERNAME);
+  if(n && n.trim()){ USERNAME=n.trim(); LS.set('username',USERNAME); initUI(); publishMyStats(); }
+}
+if(USERNAME){ document.getElementById('onboarding').classList.add('hide'); }
+document.getElementById('ob-name').addEventListener('keydown', e=>{ if(e.key==='Enter') finishOnboarding(); });
+
+// ══════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════
+const TITLES={dashboard:'Dashboard',alertas:'Alertas IA — Scanner de Patrones',charts:'Gráfico Live',screener:'Screener',leaderboard:'Leaderboard del Grupo',feed:'Feed del Grupo',checklist:'Checklist Pre-Trade',diario:'Diario Inteligente',patrones:'Análisis de Patrones',riesgo:'Calculadora de Riesgo',conversor:'Conversor de Monedas',ai:'Análisis con IA',aprendizaje:'Ruta de Aprendizaje',calendario:'Calendario'};
+function go(el, page){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  if(el) el.classList.add('on');
+  const pg = document.getElementById('p-'+page);
+  if(pg) pg.classList.add('on');
+  document.getElementById('ptitle').textContent = TITLES[page]||page;
+  if(page==='charts') setTimeout(()=>initChart(curSym),80);
+  if(page==='dashboard'){ updateStats(); renderMiniCal(); refreshDashboardCommunity(); }
+  if(page==='leaderboard'){ refreshLeaderboard(); }
+  if(page==='feed'){ refreshFeed(); }
+  if(page==='checklist'){ renderChk(); renderEmo(); }
+  if(page==='patrones') renderPatterns();
+  if(page==='aprendizaje') renderMods();
+  if(page==='riesgo') calcR();
+  if(page==='conversor'){ fetchRates(); }
+  if(page==='alertas'){ renderWatchlist(); renderAlertFeed(); }
+}
+
+// ══════════════════════════════════════════════════
+// CLOCK + STREAK
+// ══════════════════════════════════════════════════
+setInterval(()=>{ document.getElementById('clock').textContent = new Date().toLocaleTimeString('es-AR',{hour12:false})+' ART'; },1000);
+
+// ══════════════════════════════════════════════════
+// UI INIT
+// ══════════════════════════════════════════════════
+function initUI(){
+  const n = USERNAME||'Trader';
+  document.getElementById('sb-username').textContent = n;
+  document.getElementById('user-av').textContent = n[0].toUpperCase();
+  document.getElementById('streak-chip').textContent = '🔥 '+MY_STREAK+' días';
+  renderT(); updateStats(); renderMiniCal();
+  renderChk(); renderEmo();
+  calcR(); renderMods();
+  renderRules();
+}
+
+// ══════════════════════════════════════════════════
+// SHARED STORAGE HELPERS
+// ══════════════════════════════════════════════════
+async function sharedGet(key){ try{ const r=await window.storage.get(key,true); return r?JSON.parse(r.value):null; }catch(e){ return null; } }
+async function sharedSet(key,val){ try{ await window.storage.set(key,JSON.stringify(val),true); return true; }catch(e){ return false; } }
+
+// ══════════════════════════════════════════════════
+// LEADERBOARD (SHARED)
+// ══════════════════════════════════════════════════
+async function publishMyStats(){
+  const T = MY_TRADES;
+  const wins = T.filter(t=>t.pnl>0).length;
+  const pnl = T.reduce((s,t)=>s+t.pnl,0);
+  const wr = T.length ? (wins/T.length*100) : 0;
+  const pf = (() => {
+    const g=T.filter(t=>t.pnl>0).reduce((s,t)=>s+t.pnl,0);
+    const l=Math.abs(T.filter(t=>t.pnl<0).reduce((s,t)=>s+t.pnl,0));
+    return l>0?(g/l):g>0?99:0;
+  })();
+  const data = { name:USERNAME, pnl, wr, trades:T.length, pf, updated:Date.now() };
+  await sharedSet('lb:'+USERNAME, data);
+  renderMyStatsBox(data);
+  // update lb badge
+  const all = await getAllMembers();
+  document.getElementById('nb-lb').textContent = all.length;
+}
+
+async function getAllMembers(){
+  try{
+    const keys = await window.storage.list('lb:', true);
+    if(!keys||!keys.keys) return [];
+    const members = [];
+    for(const k of keys.keys){
+      try{
+        const r = await window.storage.get(k,true);
+        if(r) members.push(JSON.parse(r.value));
+      }catch(e){}
+    }
+    return members.sort((a,b)=>b.pnl-a.pnl);
+  }catch(e){ return []; }
+}
+
+const AVATAR_COLORS = ['#1f6feb','#238636','#9e6a03','#b91c1c','#6e40c9','#0e7490','#b45309'];
+function avatarColor(name){ let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))%AVATAR_COLORS.length; return AVATAR_COLORS[h]; }
+
+async function refreshLeaderboard(){
+  const members = await getAllMembers();
+  const myIdx = members.findIndex(m=>m.name===USERNAME);
+  const rankTag = myIdx>=0 ? '#'+(myIdx+1) : '#—';
+  document.getElementById('lb-rank').textContent = rankTag;
+  document.getElementById('lb-count-tag').textContent = members.length+' traders';
+
+  const rnk = ['🥇','🥈','🥉','4','5','6','7','8','9','10'];
+  document.getElementById('lb-list').innerHTML = members.length===0
+    ? '<div style="padding:28px;text-align:center;color:var(--text3);font-size:11px">Nadie en el leaderboard aún.<br>Publicá tus stats para aparecer.</div>'
+    : `<div style="display:grid;grid-template-columns:30px 36px 1fr 50px 55px 65px;padding:8px 14px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);border-bottom:1px solid var(--border)">
+        <div></div><div></div><div>Trader</div><div style="text-align:right">Trades</div><div style="text-align:right">WR</div><div style="text-align:right">P&L</div>
+       </div>`
+    + members.map((m,i)=>`
+      <div class="lb-row">
+        <div class="lb-rank">${rnk[i]||i+1}</div>
+        <div class="lb-av" style="background:${avatarColor(m.name)}">${m.name[0].toUpperCase()}</div>
+        <div class="lb-name ${m.name===USERNAME?'lb-me':''}">${m.name}${m.name===USERNAME?' 👈':''}</div>
+        <div style="text-align:right;font-size:10px;color:var(--text3)">${m.trades}</div>
+        <div style="text-align:right;font-size:11px;color:var(--text2)">${m.wr.toFixed(1)}%</div>
+        <div style="text-align:right;font-size:11px;font-weight:700;color:${m.pnl>=0?'var(--green)':'var(--red)'}">${m.pnl>=0?'+':''}$${m.pnl.toFixed(0)}</div>
+      </div>`).join('');
+}
+
+function renderMyStatsBox(data){
+  const el = document.getElementById('my-stats-box');
+  if(!el) return;
+  el.innerHTML = `
+    <div class="rbox" style="margin-top:0">
+      <div class="rr"><span class="rl">Nombre visible</span><span class="rv" style="color:var(--blue)">${data.name}</span></div>
+      <div class="rr"><span class="rl">P&L Total</span><span class="rv ${data.pnl>=0?'ok':'bad'}">${data.pnl>=0?'+':''}$${data.pnl.toFixed(2)}</span></div>
+      <div class="rr"><span class="rl">Win Rate</span><span class="rv">${data.wr.toFixed(1)}%</span></div>
+      <div class="rr"><span class="rl">Trades</span><span class="rv">${data.trades}</span></div>
+      <div class="rr"><span class="rl">Profit Factor</span><span class="rv">${data.pf>0?data.pf.toFixed(2):'—'}</span></div>
+    </div>`;
+  // also update topbar stats
+  document.getElementById('lb-wr').textContent = data.wr.toFixed(1)+'%';
+  document.getElementById('lb-pnl').textContent = (data.pnl>=0?'+':'')+`$${data.pnl.toFixed(0)}`;
+}
+
+async function refreshDashboardCommunity(){
+  const members = await getAllMembers();
+  document.getElementById('nb-lb').textContent = members.length;
+  const rnk = ['🥇','🥈','🥉'];
+  document.getElementById('dash-lb-count').textContent = members.length+' traders';
+  document.getElementById('dash-lb').innerHTML = members.slice(0,5).map((m,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:11px">
+      <span style="font-size:14px">${rnk[i]||i+1}</span>
+      <div style="width:22px;height:22px;border-radius:50%;background:${avatarColor(m.name)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff">${m.name[0].toUpperCase()}</div>
+      <span style="flex:1;font-weight:600;color:${m.name===USERNAME?'var(--blue)':'var(--text)'}">${m.name}</span>
+      <span style="font-weight:700;color:${m.pnl>=0?'var(--green)':'var(--red)'}">${m.pnl>=0?'+':''}$${m.pnl.toFixed(0)}</span>
+    </div>`).join('') || '<div style="padding:16px;text-align:center;color:var(--text3);font-size:11px">Sin datos aún</div>';
+
+  // feed preview
+  const feed = await sharedGet('group-feed') || [];
+  document.getElementById('nb-feed').textContent = feed.length;
+  const icons={win:'✅',loss:'❌',be:'➖'};
+  document.getElementById('dash-feed').innerHTML = feed.slice(0,3).map(f=>`
+    <div style="padding:8px 14px;border-bottom:1px solid var(--border);font-size:11px">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+        <span style="font-weight:700;color:var(--text)">${f.user}</span>
+        <span>${icons[f.result]||'📊'}</span>
+        <span style="color:var(--blue)">${f.asset}</span>
+        <span style="font-size:9px;color:var(--text3);margin-left:auto">${f.time}</span>
+      </div>
+      <div style="color:var(--text2);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.note}</div>
+    </div>`).join('') || '<div style="padding:16px;text-align:center;color:var(--text3);font-size:11px">Sin posts aún</div>';
+}
+
+// ══════════════════════════════════════════════════
+// FEED (SHARED)
+// ══════════════════════════════════════════════════
+async function postFeed(withWA=false){
+  const asset = document.getElementById('share-asset').value.trim();
+  const result = document.getElementById('share-result').value;
+  const pnl = parseFloat(document.getElementById('share-pnl').value)||0;
+  const note = document.getElementById('share-note').value.trim();
+  if(!asset||!note){ alert('Completá activo y notas'); return; }
+  const entry = {id:Date.now(), user:USERNAME, asset:asset.toUpperCase(), result, pnl, note, time:new Date().toLocaleString('es-AR')};
+  let feed = await sharedGet('group-feed') || [];
+  feed.unshift(entry);
+  if(feed.length>50) feed=feed.slice(0,50);
+  await sharedSet('group-feed', feed);
+  document.getElementById('share-asset').value='';
+  document.getElementById('share-pnl').value='';
+  document.getElementById('share-note').value='';
+  await refreshFeed();
+  if(withWA) shareToWhatsApp('feed-post', entry);
+}
+function postAndWhatsApp(){ postFeed(true); }
+
+async function refreshFeed(){
+  const feed = await sharedGet('group-feed') || [];
+  document.getElementById('nb-feed').textContent = feed.length;
+  document.getElementById('feed-count-tag').textContent = feed.length+' posts';
+  const icons={win:'✅',loss:'❌',be:'➖'};
+  document.getElementById('feed-list').innerHTML = feed.length===0
+    ? '<div style="padding:28px;text-align:center;color:var(--text3);font-size:11px">Nadie compartió un trade aún.<br>¡Sé el primero!</div>'
+    : feed.map(f=>`
+      <div style="padding:12px 14px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <div style="width:24px;height:24px;border-radius:50%;background:${avatarColor(f.user)};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff">${f.user[0].toUpperCase()}</div>
+          <span style="font-size:11px;font-weight:700;color:${f.user===USERNAME?'var(--blue)':'var(--text)'}">${f.user}</span>
+          <span style="font-size:14px">${icons[f.result]||'📊'}</span>
+          <span style="font-size:11px;font-weight:700;color:var(--blue)">${f.asset}</span>
+          ${f.pnl?`<span style="font-size:11px;font-weight:700;color:${f.pnl>=0?'var(--green)':'var(--red)'}">${f.pnl>=0?'+':''}$${f.pnl.toFixed(0)}</span>`:''}
+          <span style="font-size:9px;color:var(--text3);margin-left:auto">${f.time}</span>
+        </div>
+        <div style="font-size:11px;color:var(--text2);line-height:1.6;padding-left:32px">${f.note}</div>
+      </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+// WHATSAPP SHARING
+// ══════════════════════════════════════════════════
+async function shareToWhatsApp(type, data){
+  let msg = '';
+  if(type==='leaderboard'){
+    const members = await getAllMembers();
+    msg = '🏆 *TraderOS — Leaderboard del Grupo*\n\n';
+    const rnk=['🥇','🥈','🥉'];
+    members.slice(0,10).forEach((m,i)=>{
+      msg += `${rnk[i]||i+1+'. '} *${m.name}* — ${m.pnl>=0?'+':''}$${m.pnl.toFixed(0)} | WR: ${m.wr.toFixed(1)}%\n`;
+    });
+    msg += '\n📊 _Datos en tiempo real desde TraderOS_';
+  }
+  else if(type==='mystats'){
+    const T = MY_TRADES;
+    const pnl = T.reduce((s,t)=>s+t.pnl,0);
+    const wr = T.length?(T.filter(t=>t.pnl>0).length/T.length*100):0;
+    msg = `📊 *Mis Stats — ${USERNAME}*\n\n`;
+    msg += `💰 P&L: ${pnl>=0?'+':''}$${pnl.toFixed(2)}\n`;
+    msg += `🎯 Win Rate: ${wr.toFixed(1)}%\n`;
+    msg += `📋 Trades: ${T.length}\n`;
+    msg += '\n_TraderOS v3_';
+  }
+  else if(type==='feed'){
+    const feed = await sharedGet('group-feed') || [];
+    msg = '💬 *Feed del Grupo — Últimos Trades*\n\n';
+    const icons={win:'✅',loss:'❌',be:'➖'};
+    feed.slice(0,5).forEach(f=>{
+      msg += `${icons[f.result]} *${f.user}* — ${f.asset}\n_${f.note.substring(0,80)}${f.note.length>80?'…':''}_\n\n`;
+    });
+  }
+  else if(type==='feed-post' && data){
+    const icons={win:'✅',loss:'❌',be:'➖'};
+    msg = `${icons[data.result]} *${data.user}* operó *${data.asset}*`;
+    if(data.pnl) msg += ` — ${data.pnl>=0?'+':''}$${data.pnl.toFixed(0)}`;
+    msg += `\n\n📝 ${data.note}\n\n_TraderOS v3_`;
+  }
+  if(msg){
+    const url = 'https://wa.me/?text='+encodeURIComponent(msg);
+    window.open(url,'_blank');
+  }
+}
+
+function inviteWhatsApp(){
+  const msg = `📊 *TraderOS — Dashboard de Trading del Grupo*\n\nTe invito al leaderboard compartido donde podemos comparar resultados, compartir trades y aprender juntos.\n\n➡️ Abrí este link: ${window.location.href}\n\n_Cuando lo abrís, ponés tu nombre y aparecés en el leaderboard automáticamente._`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+function copyLink(){
+  navigator.clipboard.writeText(window.location.href)
+    .then(()=>alert('Link copiado ✅\nPegalo en el grupo de WhatsApp.'))
+    .catch(()=>alert('Copiá esta URL:\n'+window.location.href));
+}
+function shareAItoWhatsApp(){
+  if(!lastAiAnalysis) return;
+  const asset = document.getElementById('ai-sym').value;
+  const msg = `🤖 *Análisis IA — ${asset}*\n\n${lastAiAnalysis.replace(/<[^>]+>/g,'').substring(0,800)}\n\n⚠️ _Análisis educativo, no asesoramiento financiero._\n_TraderOS v3_`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+// ══════════════════════════════════════════════════
+// TRADES
+// ══════════════════════════════════════════════════
+function addTrade(){
+  const a = document.getElementById('ta').value.trim();
+  const pnl = parseFloat(document.getElementById('tpnl').value);
+  if(!a){ alert('Ingresá el activo'); return; }
+  if(isNaN(pnl)){ alert('Ingresá el P&L'); return; }
+  const t = {
+    id:Date.now(), date:new Date().toLocaleDateString('es-AR'),
+    dow:new Date().toLocaleDateString('es-AR',{weekday:'short'}),
+    asset:a.toUpperCase(), dir:document.getElementById('td').value,
+    market:document.getElementById('tm').value,
+    entry:parseFloat(document.getElementById('te').value)||0,
+    exit:parseFloat(document.getElementById('tx').value)||0,
+    pnl, setup:document.getElementById('tsetup').value||'Sin setup',
+    timeSlot:document.getElementById('ttime').value,
+    emotion:parseInt(document.getElementById('temo').value)||3,
+    notes:document.getElementById('tn').value,
+  };
+  MY_TRADES.unshift(t);
+  LS.set('trades', MY_TRADES);
+  MY_STREAK++; LS.set('streak', MY_STREAK);
+  document.getElementById('streak-chip').textContent='🔥 '+MY_STREAK+' días';
+  clearF(); renderT(); updateStats();
+  publishMyStats(); // sync leaderboard
+}
+function clearF(){ ['ta','te','tx','tpnl','tn'].forEach(i=>{ const el=document.getElementById(i); if(el)el.value=''; }); }
+function delTrade(id){ MY_TRADES=MY_TRADES.filter(t=>t.id!==id); LS.set('trades',MY_TRADES); renderT(); updateStats(); publishMyStats(); }
+
+function renderT(){
+  document.getElementById('tbl-badge').textContent=MY_TRADES.length+' trades';
+  document.getElementById('nb-trades').textContent=MY_TRADES.length;
+  const emos=['','😤','😟','😐','🙂','😎'];
+  const tb=document.getElementById('tbod');
+  if(!MY_TRADES.length){ tb.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:24px">Sin operaciones aún.</td></tr>'; return; }
+  tb.innerHTML=MY_TRADES.map(t=>`<tr>
+    <td>${t.date}</td>
+    <td style="color:var(--text);font-weight:600">${t.asset}</td>
+    <td><span class="${t.dir==='LONG'?'bl2':'bs2'}">${t.dir}</span></td>
+    <td style="font-size:10px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.setup||'—'}</td>
+    <td title="${['','Estrés','Ansioso','Neutro','Calmado','En zona'][t.emotion||3]}">${emos[t.emotion||3]}</td>
+    <td class="${t.pnl>=0?'pw':'pl'}">${t.pnl>=0?'+':''}$${t.pnl.toFixed(2)}</td>
+    <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text3);font-size:10px">${t.notes||'—'}</td>
+    <td><button class="btn bd" onclick="delTrade(${t.id})">✕</button></td>
+  </tr>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+// STATS
+// ══════════════════════════════════════════════════
+function updateStats(){
+  const T=MY_TRADES;
+  document.getElementById('eq-tag').textContent=T.length+' trades';
+  if(!T.length){
+    ['k-pnl','k-wr','k-pf','k-dd'].forEach(id=>{ const el=document.getElementById(id); if(el) el.textContent = id==='k-pnl'?'$0.00':id==='k-wr'?'0%':id==='k-pf'?'—':'0%'; });
+    document.getElementById('k-wrs').textContent='0 ops';
+    document.getElementById('qstats').innerHTML='<div style="padding:28px;text-align:center;color:var(--text3);font-size:11px">Registrá operaciones.</div>';
+    drawEQ([]); return;
+  }
+  const wins=T.filter(t=>t.pnl>0), losses=T.filter(t=>t.pnl<0);
+  const wr=(wins.length/T.length*100).toFixed(1);
+  const tot=T.reduce((s,t)=>s+t.pnl,0);
+  const gw=wins.reduce((s,t)=>s+t.pnl,0);
+  const gl=Math.abs(losses.reduce((s,t)=>s+t.pnl,0));
+  const pf=gl>0?(gw/gl).toFixed(2):gw>0?'∞':'—';
+  let pk=0,eq=0,dd=0;
+  [...T].reverse().forEach(t=>{ eq+=t.pnl; if(eq>pk)pk=eq; const d=pk>0?(pk-eq)/pk*100:0; if(d>dd)dd=d; });
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el)el.textContent=v; };
+  set('k-pnl',(tot>=0?'+':'')+`$${tot.toFixed(2)}`);
+  set('k-wr',wr+'%'); set('k-wrs',`${T.length} ops · ${wins.length}W ${losses.length}L`);
+  set('k-pf',pf); set('k-dd',dd.toFixed(1)+'%');
+  document.getElementById('qstats').innerHTML=`<table style="width:100%;border-collapse:collapse">
+    <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 14px;font-size:11px;color:var(--text2)">Gan. promedio</td><td style="padding:8px 14px;font-size:11px;color:var(--green);font-weight:700;text-align:right">+$${wins.length?(gw/wins.length).toFixed(2):'0.00'}</td></tr>
+    <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 14px;font-size:11px;color:var(--text2)">Pérd. promedio</td><td style="padding:8px 14px;font-size:11px;color:var(--red);font-weight:700;text-align:right">-$${losses.length?(gl/losses.length).toFixed(2):'0.00'}</td></tr>
+    <tr style="border-bottom:1px solid var(--border)"><td style="padding:8px 14px;font-size:11px;color:var(--text2)">Mejor trade</td><td style="padding:8px 14px;font-size:11px;color:var(--green);font-weight:700;text-align:right">+$${T.length?Math.max(...T.map(t=>t.pnl)).toFixed(2):'0.00'}</td></tr>
+    <tr><td style="padding:8px 14px;font-size:11px;color:var(--text2)">P&L Total</td><td style="padding:8px 14px;font-size:14px;font-weight:800;font-family:'Syne',sans-serif;color:${tot>=0?'var(--green)':'var(--red)'};text-align:right">${tot>=0?'+':''}$${tot.toFixed(2)}</td></tr>
+  </table>`;
+  let re=0; const pts=[0,...[...T].reverse().map(t=>{ re+=t.pnl; return re; })];
+  drawEQ(pts);
+}
+
+function drawEQ(pts){
+  const c=document.getElementById('eqCanvas'); if(!c)return;
+  const dpr=window.devicePixelRatio||1;
+  c.width=c.offsetWidth*dpr; c.height=130*dpr;
+  const ctx=c.getContext('2d'); ctx.scale(dpr,dpr);
+  const W=c.offsetWidth/dpr, H=130;
+  ctx.clearRect(0,0,W,H);
+  if(!pts||pts.length<2){ ctx.fillStyle='#484f58'; ctx.font='11px JetBrains Mono'; ctx.textAlign='center'; ctx.fillText('Sin datos aún',W/2,H/2); return; }
+  const mn=Math.min(...pts), mx=Math.max(...pts), rng=(mx-mn)||1;
+  ctx.strokeStyle='#21262d'; ctx.lineWidth=0.5;
+  for(let i=0;i<=3;i++){ const y=8+(H-16)*i/3; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  const co=pts.map((v,i)=>({x:i/(pts.length-1)*W, y:H-8-(v-mn)/rng*(H-16)}));
+  const pos=pts[pts.length-1]>=0, cl=pos?'#3fb950':'#f85149';
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0, pos?'rgba(63,185,80,.15)':'rgba(248,81,73,.15)'); g.addColorStop(1,'transparent');
+  ctx.beginPath(); ctx.moveTo(co[0].x,H); co.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.lineTo(co[co.length-1].x,H); ctx.closePath(); ctx.fillStyle=g; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(co[0].x,co[0].y); co.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.strokeStyle=cl; ctx.lineWidth=2; ctx.stroke();
+  const L=co[co.length-1]; ctx.beginPath(); ctx.arc(L.x,L.y,4,0,Math.PI*2); ctx.fillStyle=cl; ctx.fill();
+}
+
+// ══════════════════════════════════════════════════
+// CHECKLIST
+// ══════════════════════════════════════════════════
+const CHK_LIST=[
+  {id:'plan', title:'Tengo un plan claro para esta operación', sub:'Sé exactamente por qué entro, no es una corazonada'},
+  {id:'stop', title:'El stop-loss está definido ANTES de entrar', sub:'Sin stop no hay operación, es la regla número uno'},
+  {id:'rr',   title:'El ratio R:R es mayor a 1:2', sub:'Por cada $ arriesgado puedo ganar al menos $2'},
+  {id:'news',  title:'Revisé el calendario económico', sub:'No hay noticias de alto impacto en la próxima hora'},
+  {id:'trend', title:'Opero a favor de la tendencia dominante', sub:'No estoy peleando contra el mercado'},
+  {id:'size',  title:'El position size no supera el 2% de riesgo', sub:'Lo calculé con la calculadora de riesgo'},
+  {id:'emo',   title:'No estoy operando por FOMO o revenge', sub:'Esta decisión la tomé en calma, no bajo presión'},
+  {id:'sys',   title:'Esta operación está dentro de mi sistema', sub:'Es un setup que conozco y que está en mi plan'},
+];
+function renderChk(){
+  document.getElementById('chk-items').innerHTML = CHK_LIST.map(item=>`
+    <div class="chk-item ${MY_CHK[item.id]?'checked':''}" onclick="toggleChk('${item.id}')">
+      <div class="chk-box">${MY_CHK[item.id]?'✓':''}</div>
+      <div>
+        <div style="font-size:12px;color:var(--text)">${item.title}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px">${item.sub}</div>
+      </div>
+    </div>`).join('');
+  const done = CHK_LIST.filter(i=>MY_CHK[i.id]).length;
+  const pct = Math.round(done/CHK_LIST.length*100);
+  document.getElementById('chk-bar').style.width = pct+'%';
+  document.getElementById('chk-pct').textContent = `${pct}% — ${done}/${CHK_LIST.length} completados`;
+  document.getElementById('chk-tag').textContent = `${done} / ${CHK_LIST.length}`;
+  const btn = document.getElementById('btn-open-diario');
+  const nbchk = document.getElementById('nb-chk');
+  if(pct===100){ btn.disabled=false; btn.style.opacity='1'; nbchk.style.display='none'; }
+  else { btn.disabled=true; btn.style.opacity='.4'; nbchk.style.display=''; }
+}
+function toggleChk(id){ MY_CHK[id]=!MY_CHK[id]; LS.set('chk',MY_CHK); renderChk(); }
+function resetChk(){ MY_CHK={}; LS.set('chk',MY_CHK); renderChk(); }
+
+// ══════════════════════════════════════════════════
+// EMOTION
+// ══════════════════════════════════════════════════
+const EMOS=[
+  {v:1,i:'😤',l:'Estrés',  c:'var(--red)',   fb:'⛔ No operés hoy. El estrés destruye el juicio. Cerrá la plataforma.'},
+  {v:2,i:'😟',l:'Ansioso', c:'var(--orange)', fb:'⚠️ Alta precaución. Si operás, reducí el tamaño de posición a la mitad.'},
+  {v:3,i:'😐',l:'Neutro',  c:'var(--yellow)', fb:'🟡 Podés operar pero mantenete en tus parámetros habituales.'},
+  {v:4,i:'🙂',l:'Calmado', c:'var(--green)',  fb:'✅ Buen estado. Seguí tu plan y confiá en el sistema.'},
+  {v:5,i:'😎',l:'En zona', c:'var(--blue)',   fb:'🚀 Estado óptimo. Operar con convicción y tamaño normal de posición.'},
+];
+function renderEmo(){
+  document.getElementById('emo-btns').innerHTML = EMOS.map(e=>`
+    <div class="emo-btn ${MY_EMO===e.v?'sel':''}" onclick="setEmo(${e.v})">
+      <div style="font-size:18px">${e.i}</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:3px">${e.l}</div>
+    </div>`).join('');
+  if(MY_EMO){
+    const e = EMOS.find(x=>x.v===MY_EMO);
+    const fb = document.getElementById('emo-feedback');
+    fb.textContent = e.fb; fb.style.color = e.c;
+  }
+}
+function setEmo(v){ MY_EMO=v; LS.set('emo',v); renderEmo(); }
+
+// ══════════════════════════════════════════════════
+// PATTERNS
+// ══════════════════════════════════════════════════
+function renderPatterns(){
+  const T = MY_TRADES;
+  const empty = '<div style="color:var(--text3);font-size:11px;padding:16px;text-align:center">Necesitás más operaciones para ver patrones claros.</div>';
+  if(T.length < 3){
+    ['pat-days','pat-setups','pat-emos','pat-mkts','pat-insights'].forEach(id=>{ const el=document.getElementById(id); if(el)el.innerHTML=empty; });
+    return;
+  }
+  const group=(key)=>{
+    const d={};
+    T.forEach(t=>{
+      const k=t[key]||'?';
+      if(!d[k])d[k]={pnl:0,count:0,wins:0};
+      d[k].pnl+=t.pnl; d[k].count++; if(t.pnl>0)d[k].wins++;
+    });
+    return d;
+  };
+  const emoLabels=['','😤 Estrés','😟 Ansioso','😐 Neutro','🙂 Calmado','😎 En zona'];
+  const dayData=group('dow');
+  const setupData=group('setup');
+  const mktData=group('market');
+  const emoData={};
+  T.forEach(t=>{ const e=t.emotion||3; const l=emoLabels[e]; if(!emoData[l])emoData[l]={pnl:0,count:0,wins:0}; emoData[l].pnl+=t.pnl; emoData[l].count++; if(t.pnl>0)emoData[l].wins++; });
+
+  const renderBar=(id,data)=>{
+    const el=document.getElementById(id); if(!el)return;
+    const entries=Object.entries(data);
+    if(!entries.length){el.innerHTML=empty;return;}
+    const vals=entries.map(e=>e[1].pnl);
+    const maxAbs=Math.max(...vals.map(Math.abs),1);
+    el.innerHTML='<div style="display:flex;flex-direction:column;gap:5px">'+entries.map(([k,v])=>{
+      const pct=Math.abs(v.pnl)/maxAbs*100, pos=v.pnl>=0;
+      const wr=v.count?Math.round(v.wins/v.count*100):0;
+      return `<div style="display:flex;align-items:center;gap:8px;font-size:11px">
+        <div style="width:85px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:0">${k}</div>
+        <div style="flex:1;height:16px;background:var(--bg3);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${pos?'rgba(63,185,80,.5)':'rgba(248,81,73,.5)'};border-radius:3px"></div>
+        </div>
+        <div style="width:65px;text-align:right;color:${pos?'var(--green)':'var(--red)'};font-weight:700">${pos?'+':''}$${v.pnl.toFixed(0)}</div>
+        <div style="width:32px;text-align:right;color:var(--text3);font-size:9px">${wr}%</div>
+      </div>`;
+    }).join('')+'</div>';
+  };
+  renderBar('pat-days',dayData);
+  renderBar('pat-setups',setupData);
+  renderBar('pat-emos',emoData);
+  renderBar('pat-mkts',mktData);
+
+  // Bests
+  const bestOf=(data,metric='pnl')=>Object.entries(data).sort((a,b)=>b[1][metric]-a[1][metric])[0];
+  const worstOf=(data,metric='pnl')=>Object.entries(data).sort((a,b)=>a[1][metric]-b[1][metric])[0];
+  const bd=bestOf(dayData); const wd=worstOf(dayData);
+  const bs=bestOf(setupData); const be=bestOf(emoData);
+  const timeData={}; T.forEach(t=>{ const ts=(t.timeSlot||'?').split(' ')[0]; if(!timeData[ts])timeData[ts]={pnl:0}; timeData[ts].pnl+=t.pnl; });
+  const bt=Object.entries(timeData).sort((a,b)=>b[1].pnl-a[1].pnl)[0];
+
+  const setEl=(id,v)=>{ const el=document.getElementById(id); if(el)el.textContent=v; };
+  if(bd) setEl('pat-bd',bd[0]);
+  if(wd) setEl('pat-wd',wd[0]);
+  if(bs) setEl('pat-bs',bs[0].split(' ')[0]);
+  if(be) setEl('pat-be',be[0].split(' ')[0]);
+  if(bt) setEl('pat-bt',bt[0]);
+
+  // Auto insights
+  const insights=[];
+  const tot=T.reduce((s,t)=>s+t.pnl,0);
+  const allWR=T.filter(t=>t.pnl>0).length/T.length*100;
+  const hiEmo=T.filter(t=>(t.emotion||3)<=2);
+  if(hiEmo.length>=2){
+    const hiWR=hiEmo.filter(t=>t.pnl>0).length/hiEmo.length*100;
+    if(hiWR<allWR-10) insights.push({t:'warn',i:'😟',txt:`Cuando operás con <strong>ansiedad o estrés</strong> tu win rate cae al ${hiWR.toFixed(0)}% vs tu promedio de ${allWR.toFixed(0)}%. Evitá operar en esos estados.`});
+  }
+  if(bd&&bd[1].pnl>0) insights.push({t:'good',i:'📅',txt:`Tus <strong>mejores resultados</strong> son los días ${bd[0]}. Considerá concentrar tus operaciones esos días.`});
+  if(wd&&wd[1].pnl<0) insights.push({t:'warn',i:'⚠️',txt:`Los días <strong>${wd[0]}</strong> tenés resultados negativos consistentes. Evaluá reducir actividad o revisar qué sucede.`});
+  if(bs&&bs[1].pnl>0) insights.push({t:'good',i:'🎯',txt:`Tu setup más rentable es <strong>"${bs[0]}"</strong>. Enfocate en encontrar más oportunidades de este tipo y evitá operar otros setups.`});
+  if(tot>0) insights.push({t:'good',i:'📈',txt:`Tu curva de equity es <strong>positiva</strong> con +$${tot.toFixed(2)} neto. El sistema funciona, seguí con el plan.`});
+  else if(tot<0) insights.push({t:'warn',i:'📉',txt:`Tu curva de equity es <strong>negativa</strong> con -$${Math.abs(tot).toFixed(2)}. Revisá tu proceso antes de seguir operando.`});
+  if(!insights.length) insights.push({t:'info',i:'📊',txt:'Registrá más operaciones para obtener insights personalizados. Con 10+ trades empezarán a aparecer patrones claros.'});
+  document.getElementById('pat-insights').innerHTML = insights.map(i=>`<div class="ins ${i.t}"><span class="ins-ico">${i.i}</span><div class="ins-txt">${i.txt}</div></div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+// RISK CALC
+// ══════════════════════════════════════════════════
+function calcR(){
+  const cap=+document.getElementById('cc').value||0, rp=+document.getElementById('cr').value||0;
+  const en=+document.getElementById('ce').value||0, sl=+document.getElementById('cs').value||0;
+  const tp2=+document.getElementById('ctp').value||0, mn=+document.getElementById('cm').value||2;
+  const amt=cap*rp/100, sld=Math.abs(en-sl), tpd=Math.abs(tp2-en);
+  const sz=sld>0?Math.floor(amt/sld):0, rr=sld>0?tpd/sld:0, ok=rr>=mn;
+  const s=(id,v)=>{ const el=document.getElementById(id); if(el)el.textContent=v; };
+  s('r-amt',`$${amt.toFixed(2)}`);
+  s('r-sz',`${sz} uds.`);
+  s('r-sl',`$${sld.toFixed(2)} (${en>0?(sld/en*100).toFixed(2):0}%)`);
+  s('r-tp',`$${tpd.toFixed(2)} (${en>0?(tpd/en*100).toFixed(2):0}%)`);
+  s('r-rr',`1:${rr.toFixed(2)}`);
+  const oel=document.getElementById('r-ok'); if(!oel)return;
+  oel.textContent = ok?`✅ SÍ — Válida (R:R ${rr.toFixed(1)})`:`❌ NO — R:R ${rr.toFixed(1)} < mínimo ${mn}`;
+  oel.className='rv '+(ok?'ok':'bad');
+}
+function renderRules(){
+  const el=document.getElementById('rules'); if(!el)return;
+  el.innerHTML=[
+    {i:'h',t:'Máximo 1-2% de riesgo por trade',s:'Con $10k → máx $200 en riesgo por operación'},
+    {i:'h',t:'Stop-Loss activo antes de entrar',s:'Sin stop = apuesta, no trading'},
+    {i:'m',t:'Ratio R:R mínimo 1:2',s:'Con 40% win rate seguís siendo rentable'},
+    {i:'m',t:'Daily Stop: si perdés 3%, cerrá el día',s:'Protegé tu capital y tu psicología'},
+    {i:'l',t:'No amplíes el stop-loss nunca',s:'Ampliar el stop es negarte la realidad'},
+    {i:'l',t:'Cero revenge trading',s:'Después de una pérdida, tomá distancia'},
+  ].map(r=>`<div class="ev"><div class="dot ${r.i}"></div><div style="flex:1"><div style="color:var(--text);font-size:11px">${r.t}</div><div style="color:var(--text3);font-size:10px;margin-top:1px">${r.s}</div></div></div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+// AI ANALYSIS
+// ══════════════════════════════════════════════════
+function saveKey(){ API_KEY=document.getElementById('api-key').value.trim(); LS.set('key',API_KEY); alert(API_KEY?'API Key guardada ✅':'Key borrada.'); }
+async function runAI(){
+  const asset=document.getElementById('ai-sym').value;
+  const btn=document.getElementById('ai-btn');
+  btn.disabled=true; btn.textContent='Analizando…';
+  document.getElementById('ai-out').innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:16px;color:var(--text3);font-size:11px"><div class="spinner"></div>Analizando ${asset}…</div>`;
+  const prompt=`Eres un analista de mercados experto. Analiza ${asset} en formato educativo.\n\nResponde EXACTAMENTE en este formato:\n\n**SESGO:** [ALCISTA/BAJISTA/NEUTRAL] — [una línea explicando por qué]\n\n**CONTEXTO TÉCNICO:**\n[2-3 líneas sobre tendencia, niveles clave, indicadores]\n\n**CONTEXTO FUNDAMENTAL:**\n[2-3 líneas sobre catalizadores actuales]\n\n**NIVELES CLAVE:**\n- Soporte: [nivel]\n- Resistencia: [nivel]\n- Stop sugerido: [nivel]\n- Target 1: [nivel] | Target 2: [nivel]\n\n**RATIO R:R ESTIMADO:** 1:X\n\n**APRENDIZAJE — POR QUÉ ESTE ANÁLISIS:**\n[3-4 líneas explicando la lógica para que el estudiante aprenda a replicarla]\n\n**SEÑALES A MONITOREAR:**\n[2-3 cosas concretas a observar]\n\n⚠️ Análisis educativo, no asesoramiento financiero.`;
+  try{
+    let txt='';
+    if(API_KEY){
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+      const data=await res.json();
+      txt=data.content?.map(c=>c.text||'').join('')||'Error en la respuesta.';
+    } else {
+      await new Promise(r=>setTimeout(r,1200));
+      txt=DEMO_ANALYSIS[asset]||DEMO_ANALYSIS['default'];
+    }
+    lastAiAnalysis=txt;
+    const isAlcista=txt.includes('ALCISTA'), isBajista=txt.includes('BAJISTA');
+    const fmt=txt.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    document.getElementById('ai-out').innerHTML=`<div class="ai-bubble">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:16px">🤖</span>
+        <span style="font-size:11px;font-weight:700;color:var(--purple)">TraderOS AI</span>
+        <span style="font-size:9px;color:var(--text3);margin-left:auto">${new Date().toLocaleTimeString('es-AR',{hour12:false})} ${API_KEY?'(Live)':'(Demo)'}</span>
+      </div>
+      <div class="ai-body">${fmt}</div>
+      <div class="ai-tags" style="margin-top:10px">
+        <span class="ai-tag ${isAlcista?'bull':isBajista?'bear':'neu'}">${isAlcista?'📈 ALCISTA':isBajista?'📉 BAJISTA':'➖ NEUTRAL'}</span>
+        <span class="ai-tag neu">🎓 Educativo</span>
+        <span class="ai-tag neu">⚠️ No es asesoramiento</span>
+      </div>
+    </div>`;
+    document.getElementById('ai-wa-btn').style.display='';
+  }catch(e){
+    document.getElementById('ai-out').innerHTML=`<div class="ai-bubble"><div class="ai-body" style="color:var(--red)">Error: ${e.message}</div></div>`;
+  }
+  btn.disabled=false; btn.textContent='🤖 Analizar';
+}
+const DEMO_ANALYSIS={
+'NVDA':`**SESGO:** ALCISTA — NVIDIA sigue siendo el líder indiscutido en semiconductores para IA con fundamentales excepcionales.\n\n**CONTEXTO TÉCNICO:**\nEl precio cotiza sobre su EMA50 confirmando tendencia alcista de mediano plazo. El RSI en zona 55-65 muestra momentum positivo sin sobrecompra. La zona $185-190 es soporte clave donde confluyen EMA20 y nivel de consolidación previo.\n\n**CONTEXTO FUNDAMENTAL:**\nQ4 FY2026 superó todas las estimaciones: $68.1B ingresos (+73% YoY). Data Center sigue creciendo impulsado por demanda de GPUs para IA. Guidance Q1 FY2027 de $78B confirma el momentum.\n\n**NIVELES CLAVE:**\n- Soporte: $185-187 (EMA20 + zona de consolidación)\n- Resistencia: $205-210 (máximos recientes)\n- Stop sugerido: $182\n- Target 1: $205 | Target 2: $220\n\n**RATIO R:R ESTIMADO:** 1:2.5\n\n**APRENDIZAJE — POR QUÉ ESTE ANÁLISIS:**\nEste análisis combina fundamentales (sesgo) con técnico (timing y niveles). Los fundamentales dicen HACIA DÓNDE va el precio en el mediano plazo. El análisis técnico dice CUÁNDO y DÓNDE entrar. Nunca los uses por separado: un activo con fundamentales alcistas sigue necesitando un punto técnico correcto de entrada para optimizar el R:R.\n\n**SEÑALES A MONITOREAR:**\n1. Cierre diario >$200 con volumen confirmaría ruptura hacia $210\n2. Rebote en soporte $185-187 = entrada en retroceso\n3. Noticias sobre regulación de chips a China podrían invalidar el sesgo`,
+'BTC':`**SESGO:** NEUTRAL — Bitcoin en consolidación entre rangos esperando catalizador definitivo.\n\n**CONTEXTO TÉCNICO:**\nBTC en rango lateral de mediano plazo. Estructura de máximos y mínimos similares indica indecisión. El MACD cerca del cero confirma equilibrio entre compradores y vendedores. Volumen decreciente sugiere acumulación silenciosa.\n\n**CONTEXTO FUNDAMENTAL:**\nETFs de BTC spot mantienen flujos positivos institucionales. El contexto macro (decisiones Fed, risk-on/off global) sigue siendo el driver principal de corto plazo. El halving sigue siendo un catalizador estructural de largo plazo.\n\n**NIVELES CLAVE:**\n- Soporte: $82,000-$84,000 (demanda institucional)\n- Resistencia: $92,000-$95,000 (zona de oferta)\n- Stop sugerido: $79,500\n- Target 1: $92,000 | Target 2: $100,000\n\n**RATIO R:R ESTIMADO:** 1:2.2\n\n**APRENDIZAJE — POR QUÉ ESTE ANÁLISIS:**\nEn mercados laterales (ranging) la estrategia óptima es operar los extremos del rango: comprar cerca del soporte con stop debajo, tomar ganancias cerca de la resistencia. El error más común es buscar rupturas en el medio del rango donde el precio no tiene dirección definida. Esperá la confirmación en los extremos.\n\n**SEÑALES A MONITOREAR:**\n1. Ruptura con volumen >$95k → sesgo fuertemente alcista\n2. Cierre <$82k → sesgo bajista hacia $75k\n3. Datos de inflación USA y decisiones Fed son los drivers macro`,
+'default':`**SESGO:** NEUTRAL — Análisis demo. Configurá tu API key para análisis en tiempo real.\n\n**CONTEXTO TÉCNICO:**\nEste es un análisis de demostración. Con tu Anthropic API key, TraderOS AI analiza el contexto actual del mercado en tiempo real, incluyendo tendencia, indicadores y niveles clave específicos.\n\n**CONTEXTO FUNDAMENTAL:**\nCon la API key activada, el análisis considera noticias recientes, earnings, contexto macro y catalizadores fundamentales actuales del activo seleccionado.\n\n**NIVELES CLAVE:**\n- Los niveles específicos requieren API key activa\n- El análisis demo muestra la estructura del output\n\n**RATIO R:R ESTIMADO:** Variable según condiciones\n\n**APRENDIZAJE — POR QUÉ ESTE ANÁLISIS:**\nTraderOS AI está diseñado para enseñarte a pensar como un trader profesional. Cada análisis explica el razonamiento detrás de cada decisión para que puedas replicar la lógica por tu cuenta, no solo seguir señales ciegamente.\n\n**SEÑALES A MONITOREAR:**\n1. Configurá tu API key en el panel de configuración\n2. Los análisis en tiempo real usan contexto actual del mercado\n3. Siempre combiná con tu propio análisis y gestión de riesgo`
+};
+
+// ══════════════════════════════════════════════════
+// MODULES
+// ══════════════════════════════════════════════════
+function renderMods(){
+  const done=MY_MODULES.filter(m=>m.p===100).length, pct=Math.round(done/MY_MODULES.length*100);
+  const s=(id,v)=>{ const el=document.getElementById(id); if(el)el.textContent=v; };
+  s('lp',pct+'%'); s('ld',done); s('lps',`${done}/${MY_MODULES.length}`);
+  const nxt=MY_MODULES.find(m=>m.p>0&&m.p<100)||MY_MODULES.find(m=>m.p===0);
+  s('ln',nxt?nxt.name:'🏆 ¡Completado!');
+  document.getElementById('mod-grid').innerHTML=MY_MODULES.map(m=>{
+    const d=m.p===100, pr=m.p>0&&m.p<100;
+    return `<div class="mod ${d?'done':''}" onclick="cycMod(${m.id})">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
+        <span style="font-size:18px">${m.ico}</span>
+        <span style="font-size:10px;color:${d?'var(--green)':pr?'var(--yellow)':'var(--text3)'}">${d?'✓ Completado':pr?m.p+'% progreso':'Sin iniciar'}</span>
+      </div>
+      <div style="font-size:12px;font-weight:700;font-family:Syne,sans-serif;color:var(--text);margin-bottom:3px">${m.name}</div>
+      <div style="font-size:10px;color:var(--text2);line-height:1.4;margin-bottom:7px">${m.desc}</div>
+      <div class="pb"><div class="pf ${m.c}" style="width:${m.p}%"></div></div>
+      <div style="font-size:9px;color:var(--text3);margin-top:2px">${m.p}% — Click para avanzar</div>
+    </div>`;
+  }).join('');
+}
+function cycMod(id){ const m=MY_MODULES.find(x=>x.id===id); m.p=m.p<25?25:m.p<50?50:m.p<75?75:m.p<100?100:0; LS.set('mods',MY_MODULES); renderMods(); }
+
+// ══════════════════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════════════════
+const CAL=[
+  {t:'08:30',n:'IPC — Inflación EE.UU.',f:'🇺🇸',i:'h',d:'Mié'},
+  {t:'14:30',n:'Ventas Minoristas USA',f:'🇺🇸',i:'h',d:'Mar'},
+  {t:'14:30',n:'Actas FOMC — Fed',f:'🇺🇸',i:'h',d:'Mié'},
+  {t:'08:30',n:'Solicitudes de Desempleo',f:'🇺🇸',i:'m',d:'Jue'},
+  {t:'08:30',n:'NFP — Nóminas no Agrícolas',f:'🇺🇸',i:'h',d:'Vie'},
+  {t:'08:30',n:'Tasa de Desempleo',f:'🇺🇸',i:'h',d:'Vie'},
+];
+function renderMiniCal(){
+  document.getElementById('mini-cal').innerHTML = CAL.filter(e=>e.i==='h').map(e=>`
+    <div class="ev"><span style="color:var(--text2);min-width:40px">${e.t}</span><div class="dot ${e.i}"></div><span style="flex:1;color:var(--text)">${e.f} ${e.n}</span><span style="font-size:9px;color:var(--text3)">${e.d}</span></div>`).join('');
+}
+
+// ══════════════════════════════════════════════════
+// CHART
+// ══════════════════════════════════════════════════
+const CATS={
+  tech:[{s:'NASDAQ:NVDA',l:'NVDA'},{s:'NASDAQ:AAPL',l:'AAPL'},{s:'NASDAQ:TSLA',l:'TSLA'},{s:'NASDAQ:MSFT',l:'MSFT'},{s:'NASDAQ:META',l:'META'},{s:'NASDAQ:GOOGL',l:'GOOGL'},{s:'NASDAQ:AMZN',l:'AMZN'},{s:'NASDAQ:NFLX',l:'NFLX'},{s:'NYSE:AMD',l:'AMD'},{s:'NASDAQ:INTC',l:'INTC'},{s:'NYSE:ORCL',l:'ORCL'},{s:'NYSE:COIN',l:'COIN'},{s:'NASDAQ:MSTR',l:'MSTR'},{s:'NYSE:PLTR',l:'PLTR'},{s:'NYSE:UBER',l:'UBER'},{s:'NASDAQ:ABNB',l:'ABNB'},{s:'NASDAQ:RIVN',l:'RIVN'},{s:'NASDAQ:ADBE',l:'ADBE'},{s:'NASDAQ:CRM',l:'CRM'}],
+  cripto:[{s:'BINANCE:BTCUSDT',l:'BTC'},{s:'BINANCE:ETHUSDT',l:'ETH'},{s:'BINANCE:SOLUSDT',l:'SOL'},{s:'BINANCE:BNBUSDT',l:'BNB'},{s:'BINANCE:XRPUSDT',l:'XRP'},{s:'BINANCE:ADAUSDT',l:'ADA'},{s:'BINANCE:DOGEUSDT',l:'DOGE'},{s:'BINANCE:AVAXUSDT',l:'AVAX'},{s:'BINANCE:DOTUSDT',l:'DOT'},{s:'BINANCE:LINKUSDT',l:'LINK'},{s:'BINANCE:MATICUSDT',l:'MATIC'},{s:'BINANCE:NEARUSDT',l:'NEAR'},{s:'BINANCE:APTUSDT',l:'APT'},{s:'BINANCE:ARBUSDT',l:'ARB'},{s:'BINANCE:INJUSDT',l:'INJ'},{s:'BINANCE:SUIUSDT',l:'SUI'},{s:'BINANCE:PEPEUSDT',l:'PEPE'},{s:'BINANCE:WIFUSDT',l:'WIF'},{s:'BINANCE:BONKUSDT',l:'BONK'}],
+  forex:[{s:'FX:EURUSD',l:'EUR/USD'},{s:'FX:GBPUSD',l:'GBP/USD'},{s:'FX:USDJPY',l:'USD/JPY'},{s:'FX:USDCHF',l:'USD/CHF'},{s:'FX:AUDUSD',l:'AUD/USD'},{s:'FX:NZDUSD',l:'NZD/USD'},{s:'FX:USDCAD',l:'USD/CAD'},{s:'FX:EURJPY',l:'EUR/JPY'},{s:'FX:GBPJPY',l:'GBP/JPY'},{s:'FX:USDMXN',l:'USD/MXN'},{s:'FX:USDBRL',l:'USD/BRL'},{s:'FX:USDARS',l:'USD/ARS'},{s:'FX:USDCOP',l:'USD/COP'},{s:'FX:USDCLP',l:'USD/CLP'}],
+  etf:[{s:'AMEX:SPY',l:'SPY'},{s:'NASDAQ:QQQ',l:'QQQ'},{s:'AMEX:DIA',l:'DIA'},{s:'AMEX:IWM',l:'IWM'},{s:'AMEX:XLK',l:'XLK'},{s:'AMEX:XLF',l:'XLF'},{s:'AMEX:XLE',l:'XLE'},{s:'AMEX:GLD',l:'GLD'},{s:'NASDAQ:TQQQ',l:'TQQQ'},{s:'AMEX:SOXL',l:'SOXL'},{s:'NASDAQ:ARKK',l:'ARKK'},{s:'NASDAQ:IBIT',l:'IBIT'},{s:'AMEX:VXX',l:'VXX'}],
+  materias:[{s:'TVC:GOLD',l:'ORO'},{s:'TVC:SILVER',l:'PLATA'},{s:'NYMEX:CL1!',l:'WTI'},{s:'NYMEX:NG1!',l:'GAS'},{s:'CBOT:ZW1!',l:'TRIGO'},{s:'CBOT:ZC1!',l:'MAÍZ'},{s:'CBOT:ZS1!',l:'SOJA'},{s:'NYMEX:HG1!',l:'COBRE'}],
+  latam:[{s:'BYMA:MERVAL',l:'MERVAL'},{s:'BMFBOVESPA:IBOV',l:'IBOVESPA'},{s:'NYSE:EWZ',l:'ETF BR'},{s:'NYSE:EWW',l:'ETF MX'},{s:'BCBA:GGAL',l:'GALICIA'},{s:'BCBA:YPF',l:'YPF ARG'},{s:'NYSE:YPF',l:'YPF NYSE'},{s:'BCBA:PAMP',l:'PAMPA'},{s:'MX:IPC',l:'IPC MX'}],
+};
+let curSym='NASDAQ:NVDA', tvW=null;
+function renderSymTabs(cat){
+  document.getElementById('sym-tabs').innerHTML=(CATS[cat]||[]).map(s=>`<div class="st${s.s===curSym?' on':''}" onclick="chSym(this,'${s.s}')">${s.l}</div>`).join('');
+}
+function setCat(el,cat){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on')); el.classList.add('on');
+  renderSymTabs(cat);
+  const first=CATS[cat][0]; if(first){ curSym=first.s; document.getElementById('sym-cur').textContent=first.l; initChart(first.s); }
+}
+function chSym(el,sym){
+  document.querySelectorAll('.st').forEach(t=>t.classList.remove('on')); el.classList.add('on');
+  curSym=sym; document.getElementById('sym-cur').textContent=sym.split(':')[1]; initChart(sym);
+}
+function searchSym(){
+  const v=document.getElementById('sym-search').value.trim().toUpperCase(); if(!v)return;
+  const sym=v.includes(':')?v:['BTC','ETH','SOL','BNB','XRP','ADA','DOGE','AVAX'].includes(v)?'BINANCE:'+v+'USDT':['EURUSD','GBPUSD','USDJPY','USDMXN','USDBRL','USDARS'].includes(v)?'FX:'+v:'NASDAQ:'+v;
+  curSym=sym; document.getElementById('sym-cur').textContent=v; document.getElementById('sym-search').value=''; initChart(sym);
+}
+function initChart(sym){
+  const cont=document.getElementById('tv_chart'); if(!cont)return;
+  if(tvW){try{tvW.remove();}catch(e){}} cont.innerHTML='';
+  if(typeof TradingView==='undefined')return;
+  tvW=new TradingView.widget({width:'100%',height:'100%',symbol:sym||'NASDAQ:NVDA',interval:'D',timezone:'America/Argentina/Buenos_Aires',theme:'dark',style:'1',locale:'es',toolbar_bg:'#0d1117',enable_publishing:false,hide_side_toolbar:false,allow_symbol_change:true,container_id:'tv_chart',studies:['MASimple@tv-basicstudies','RSI@tv-basicstudies','MACD@tv-basicstudies'],show_popup_button:true});
+}
+
+// ══════════════════════════════════════════════════
+// CONVERSOR DE MONEDAS
+// Tasas: ExchangeRate-API (gratis, sin key) + bluelytics para ARS
+// Cache de 3 horas en localStorage
+// ══════════════════════════════════════════════════
+const FX = {
+  rates: {},          // todas las tasas vs USD
+  arsRates: {},       // blue, oficial, mep, ccl
+  lastFetch: 0,
+  tipo: 'blue',       // tipo de cambio ARS seleccionado
+  history: LS.get('fx-hist', []),
+  CACHE_MS: 3 * 60 * 60 * 1000, // 3 horas
+
+  CURRENCIES: {
+    USD: { flag:'🇺🇸', name:'Dólar USA',       dec:2 },
+    ARS: { flag:'🇦🇷', name:'Peso Argentino',  dec:0 },
+    EUR: { flag:'🇪🇺', name:'Euro',            dec:2 },
+    BRL: { flag:'🇧🇷', name:'Real Brasileño',  dec:2 },
+    MXN: { flag:'🇲🇽', name:'Peso Mexicano',   dec:2 },
+    CLP: { flag:'🇨🇱', name:'Peso Chileno',    dec:0 },
+    COP: { flag:'🇨🇴', name:'Peso Colombiano', dec:0 },
+    UYU: { flag:'🇺🇾', name:'Peso Uruguayo',   dec:2 },
+    PEN: { flag:'🇵🇪', name:'Sol Peruano',     dec:2 },
+    BTC: { flag:'₿',   name:'Bitcoin',         dec:8 },
+    ETH: { flag:'Ξ',   name:'Ethereum',        dec:6 },
+  }
+};
+
+async function fetchRates(force=false){
+  const now = Date.now();
+  const cached = LS.get('fx-rates-cache', null);
+  const tag = document.getElementById('fx-update-tag');
+
+  // Usar caché si no expiró (3 horas)
+  if(!force && cached && (now - cached.ts) < FX.CACHE_MS){
+    FX.rates   = cached.rates;
+    FX.arsRates = cached.arsRates;
+    FX.lastFetch = cached.ts;
+    renderFXTable();
+    renderARSCards();
+    convertFX();
+    const mins = Math.round((FX.CACHE_MS - (now - cached.ts)) / 60000);
+    if(tag){ tag.className='ctag gr'; tag.textContent='Cache · actualiza en '+mins+'m'; }
+    return;
+  }
+
+  if(tag){ tag.className='ctag'; tag.textContent='Actualizando...'; }
+
+  try {
+    // 1. Tasas internacionales vía exchangerate-api (open, sin key)
+    const r1 = await fetch('https://open.er-api.com/v6/latest/USD');
+    const d1 = await r1.json();
+    FX.rates = d1.rates || {};
+
+    // 2. Tipos de cambio ARS (bluelytics - API pública argentina)
+    let arsOk = false;
+    try {
+      const r2 = await fetch('https://api.bluelytics.com.ar/v2/latest');
+      const d2 = await r2.json();
+      FX.arsRates = {
+        oficial: d2.oficial?.value_sell || FX.rates.ARS || 1000,
+        blue:    d2.blue?.value_sell    || (FX.rates.ARS * 1.5) || 1500,
+        mep:     d2.oficial_euro?.value_sell || (FX.rates.ARS * 1.4) || 1400,
+        ccl:     d2.blue?.value_buy      || (FX.rates.ARS * 1.52) || 1520,
+      };
+      arsOk = true;
+    } catch(e2){
+      // fallback con solo el oficial
+      FX.arsRates = {
+        oficial: FX.rates.ARS || 1000,
+        blue:    (FX.rates.ARS || 1000) * 1.48,
+        mep:     (FX.rates.ARS || 1000) * 1.38,
+        ccl:     (FX.rates.ARS || 1000) * 1.50,
+      };
+    }
+
+    // BTC y ETH desde CoinGecko (gratis)
+    try {
+      const r3 = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd');
+      const d3 = await r3.json();
+      if(d3.bitcoin?.usd)  FX.rates.BTC = 1 / d3.bitcoin.usd;
+      if(d3.ethereum?.usd) FX.rates.ETH = 1 / d3.ethereum.usd;
+    } catch(e3){}
+
+    FX.lastFetch = now;
+
+    // Guardar caché
+    LS.set('fx-rates-cache', { rates: FX.rates, arsRates: FX.arsRates, ts: now });
+
+    renderFXTable();
+    renderARSCards();
+    convertFX();
+
+    const timeStr = new Date(now).toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+    if(tag){ tag.className='ctag gr'; tag.textContent='✓ '+timeStr+' · próx. 3h'; }
+
+    // Actualizar badge
+    const nb = document.getElementById('nb-fx');
+    if(nb){ nb.textContent = 'LIVE'; }
+
+  } catch(err){
+    if(tag){ tag.className='ctag rd'; tag.textContent='⚠ Sin conexión'; }
+    console.warn('FX fetch error:', err);
+  }
+}
+
+function getARS_USD(){
+  // Devuelve cuántos ARS vale 1 USD según el tipo seleccionado
+  return FX.arsRates[FX.tipo] || FX.rates.ARS || 1000;
+}
+
+function getRateToUSD(cur){
+  if(cur === 'USD') return 1;
+  if(cur === 'ARS') return 1 / getARS_USD();
+  if(cur === 'BTC' || cur === 'ETH') return FX.rates[cur] || 0;
+  return 1 / (FX.rates[cur] || 1);
+}
+
+function getRateFromUSD(cur){
+  if(cur === 'USD') return 1;
+  if(cur === 'ARS') return getARS_USD();
+  if(cur === 'BTC' || cur === 'ETH') return FX.rates[cur] || 0;
+  return FX.rates[cur] || 1;
+}
+
+function convertFX(){
+  const from   = document.getElementById('fx-from')?.value;
+  const to     = document.getElementById('fx-to')?.value;
+  const amount = parseFloat(document.getElementById('fx-amount')?.value) || 0;
+  if(!from || !to || !Object.keys(FX.rates).length) return;
+
+  const inUSD  = amount * getRateToUSD(from);
+  const result = inUSD * getRateFromUSD(to);
+
+  const toCur  = FX.CURRENCIES[to]  || { flag:'', dec:2 };
+  const fromCur= FX.CURRENCIES[from]|| { flag:'', dec:2 };
+
+  const fmtResult = fmtNum(result, toCur.dec);
+  const rate1     = getRateFromUSD(to) / getRateToUSD(from) * 1;
+
+  const resEl  = document.getElementById('fx-result');
+  const lblEl  = document.getElementById('fx-rate-label');
+  const frmEl  = document.getElementById('fx-formula');
+  if(resEl) resEl.textContent  = toCur.flag + ' ' + fmtResult + ' ' + to;
+  if(frmEl) frmEl.textContent  = fmtNum(amount, fromCur.dec) + ' ' + from + '  →  ' + to;
+  if(lblEl) lblEl.textContent  = '1 ' + from + ' = ' + fmtNum(rate1, toCur.dec) + ' ' + to + (from==='ARS'||to==='ARS' ? '  ·  tipo: '+FX.tipo : '');
+
+  // Guardar historial (solo si el resultado es válido)
+  if(amount > 0 && result > 0){
+    const entry = {
+      id: Date.now(),
+      from, to, amount, result,
+      tipo: (from==='ARS'||to==='ARS') ? FX.tipo : null,
+      time: new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})
+    };
+    // Evitar duplicados exactos seguidos
+    const last = FX.history[0];
+    if(!last || last.from!==entry.from || last.to!==entry.to || last.amount!==entry.amount){
+      FX.history.unshift(entry);
+      if(FX.history.length > 20) FX.history = FX.history.slice(0,20);
+      LS.set('fx-hist', FX.history);
+      renderFXHistory();
+    }
+  }
+}
+
+function fmtNum(n, dec=2){
+  if(n === undefined || n === null || isNaN(n)) return '—';
+  if(n >= 1000000) return (n/1000000).toFixed(2) + 'M';
+  // Para números muy chicos (BTC/ETH rate)
+  if(n > 0 && n < 0.0001) return n.toExponential(4);
+  return n.toLocaleString('es-AR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+
+function renderARSCards(){
+  const ar = FX.arsRates;
+  const s = (id, v) => { const el=document.getElementById(id); if(el) el.textContent = '$'+fmtNum(v,0); };
+  s('fx-oficial', ar.oficial);
+  s('fx-blue',    ar.blue);
+  s('fx-mep',     ar.mep);
+  s('fx-ccl',     ar.ccl);
+}
+
+function renderFXTable(){
+  const el = document.getElementById('fx-table');
+  if(!el) return;
+  const currencies = Object.keys(FX.CURRENCIES);
+  const arsUSD = getARS_USD();
+
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:7px 14px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);border-bottom:1px solid var(--border)">
+      <div>Moneda</div><div style="text-align:right">1 USD =</div><div style="text-align:right">1 ARS =</div><div style="text-align:right">1 unidad = USD</div>
+    </div>
+    `+currencies.map(cur => {
+      const info = FX.CURRENCIES[cur];
+      let rateFromUSD, rateFromARS, rateToUSD;
+      if(cur === 'USD'){
+        rateFromUSD = 1; rateFromARS = 1/arsUSD; rateToUSD = 1;
+      } else if(cur === 'ARS'){
+        rateFromUSD = arsUSD; rateFromARS = 1; rateToUSD = 1/arsUSD;
+      } else if(cur === 'BTC' || cur === 'ETH'){
+        rateToUSD   = 1 / (FX.rates[cur] || 1);
+        rateFromUSD = FX.rates[cur] || 0;
+        rateFromARS = rateFromUSD / arsUSD;
+      } else {
+        rateFromUSD = FX.rates[cur] || 0;
+        rateToUSD   = rateFromUSD > 0 ? 1/rateFromUSD : 0;
+        rateFromARS = rateFromUSD / arsUSD;
+      }
+      const isARS = cur === 'ARS';
+      return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;cursor:pointer;transition:background .15s"
+               onmouseenter="this.style.background='rgba(255,255,255,.02)'" onmouseleave="this.style.background=''"
+               onclick="document.getElementById('fx-to').value='${cur}';convertFX()">
+        <div style="display:flex;align-items:center;gap:7px">
+          <span style="font-size:14px">${info.flag}</span>
+          <div>
+            <div style="font-weight:700;color:var(--text)">${cur}</div>
+            <div style="font-size:9px;color:var(--text3)">${info.name}</div>
+          </div>
+        </div>
+        <div style="text-align:right;color:${isARS?'var(--green)':'var(--text2)'};font-weight:${isARS?'700':'400'}">${fmtNum(rateFromUSD, info.dec)}</div>
+        <div style="text-align:right;color:var(--text2);font-size:10px">${fmtNum(rateFromARS, info.dec)}</div>
+        <div style="text-align:right;color:var(--text2);font-size:10px">${rateToUSD>0?'$'+fmtNum(rateToUSD,2):'—'}</div>
+      </div>`;
+    }).join('');
+}
+
+function renderFXHistory(){
+  const el = document.getElementById('fx-history');
+  const cnt = document.getElementById('fx-hist-count');
+  if(!el) return;
+  if(cnt) cnt.textContent = FX.history.length;
+  if(!FX.history.length){
+    el.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text3);font-size:11px">Las conversiones que hagás aparecen acá.</div>';
+    return;
+  }
+  const fromCur = (c) => FX.CURRENCIES[c] || { flag:'', dec:2 };
+  el.innerHTML = FX.history.map(h => `
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:11px;cursor:pointer"
+         onclick="document.getElementById('fx-amount').value='${h.amount}';document.getElementById('fx-from').value='${h.from}';document.getElementById('fx-to').value='${h.to}';convertFX()">
+      <span style="font-size:13px">${fromCur(h.from).flag}</span>
+      <span style="color:var(--text2)">${fmtNum(h.amount, fromCur(h.from).dec)} ${h.from}</span>
+      <span style="color:var(--text3)">→</span>
+      <span style="font-size:13px">${fromCur(h.to).flag}</span>
+      <span style="color:var(--blue);font-weight:700">${fmtNum(h.result, fromCur(h.to).dec)} ${h.to}</span>
+      ${h.tipo ? `<span style="font-size:9px;color:var(--text3);margin-left:auto">${h.tipo}</span>` : ''}
+      <span style="font-size:9px;color:var(--text3);${h.tipo?'':'margin-left:auto'}">${h.time}</span>
+    </div>`).join('');
+}
+
+function setTipo(el, tipo){
+  FX.tipo = tipo;
+  document.querySelectorAll('.fx-tipo').forEach(b=>{
+    b.classList.remove('on');
+    b.style.color=''; b.style.borderColor=''; b.style.background='';
+  });
+  el.classList.add('on');
+  el.style.color='var(--blue)'; el.style.borderColor='rgba(88,166,255,.4)'; el.style.background='var(--glow)';
+  renderFXTable();
+  renderARSCards();
+  convertFX();
+}
+
+function swapFX(){
+  const from = document.getElementById('fx-from');
+  const to   = document.getElementById('fx-to');
+  const tmp  = from.value;
+  from.value = to.value;
+  to.value   = tmp;
+  convertFX();
+}
+
+function setAmt(v){
+  // Pone el monto en USD y cambia "desde" a USD
+  document.getElementById('fx-amount').value = v;
+  document.getElementById('fx-from').value = 'USD';
+  convertFX();
+}
+
+// Auto-actualizar tasas cada 3 horas si la página está abierta
+setInterval(()=>{
+  if(document.getElementById('p-conversor').classList.contains('on')){
+    fetchRates(true);
+  }
+}, FX.CACHE_MS);
+
+// Render historial al iniciar
+renderFXHistory();
+
+// ══════════════════════════════════════════════════
+// ALERTAS IA — SCANNER DE PATRONES
+// ══════════════════════════════════════════════════
+const AL = {
+  running: false,
+  timer: null,
+  intervalMin: 15,
+  alerts: LS.get('al-alerts', []),
+  watchlist: LS.get('al-watchlist', [
+    // CRIPTO
+    {sym:'BTC',  type:'crypto',    market:'Cripto',          note:'El rey. Referencia del mercado total.'},
+    {sym:'ETH',  type:'crypto',    market:'Cripto',          note:'Plataforma DeFi. Segunda por capitalización.'},
+    {sym:'DOGE', type:'crypto',    market:'Cripto',          note:'Musk effect + satélite DOGE-1 pendiente.'},
+    {sym:'SOL',  type:'crypto',    market:'Cripto',          note:'Rival de ETH. Alta velocidad y bajo costo.'},
+    {sym:'GORK', type:'crypto',    market:'Cripto',          note:'Mencionado por Musk ayer. +520% en 24hs.'},
+    // ACCIONES USA
+    {sym:'NVDA', type:'stock',     market:'Acciones USA',    note:'IA y semiconductores. Tendencia dominante 2025.'},
+    {sym:'TSLA', type:'stock',     market:'Acciones USA',    note:'Musk directo. Muy reactivo a sus tweets.'},
+    {sym:'FCX',  type:'stock',     market:'Acciones USA',    note:'Freeport-McMoRan. Cobre = pulso economía global.'},
+    {sym:'AAPL', type:'stock',     market:'Acciones USA',    note:'Defensivo de alto valor. Estabilidad + cash.'},
+    {sym:'META', type:'stock',     market:'Acciones USA',    note:'IA + redes sociales. Crecimiento acelerado.'},
+    {sym:'AMZN', type:'stock',     market:'Acciones USA',    note:'AWS + cloud + e-commerce. Sólido y creciente.'},
+    // ETFs
+    {sym:'SPY',  type:'etf',       market:'ETFs USA',        note:'S&P 500. Termómetro del mercado americano.'},
+    {sym:'QQQ',  type:'etf',       market:'ETFs USA',        note:'Nasdaq 100. Tecnológicas puras.'},
+    {sym:'GLD',  type:'etf',       market:'Commodities',     note:'Oro. Refugio en momentos de incertidumbre.'},
+    // ARGENTINA
+    {sym:'AL30', type:'bond',      market:'Argentina',       note:'Bono soberano. Referencia del riesgo país AR.'},
+    {sym:'PAMP', type:'stock',     market:'Argentina',       note:'Pampa Energía. Líder energético del MERVAL.'},
+    {sym:'GGAL', type:'stock',     market:'Argentina',       note:'Galicia. Banco más importante del MERVAL.'},
+    {sym:'YPF',  type:'stock',     market:'Argentina',       note:'Petróleo estatal. Alta volatilidad política.'},
+    // COMMODITIES
+    {sym:'XAUUSD', type:'forex',   market:'Commodities',     note:'Oro spot. Inflación y dólar global.'},
+    {sym:'XBRUSD', type:'forex',   market:'Commodities',     note:'Brent crude. Energía y geopolítica.'},
+  ]),
+  scanning: 0,   // índice del símbolo que se está escaneando
+  bullCount: 0,
+  bearCount: 0,
+  scannedTotal: 0,
+  confirmed: 0,
+  total: 0,
+};
+
+// Guardado de key del scanner
+function saveAlKey(){
+  const k = document.getElementById('al-key').value.trim();
+  API_KEY = k; LS.set('key', k);
+  alert(k ? 'API Key guardada ✅\nEl scanner usará análisis en tiempo real.' : 'Key borrada. El scanner usará modo demo.');
+}
+
+// Watchlist
+function addToWatchlist(){
+  const inp = document.getElementById('al-add-sym');
+  const raw = inp.value.trim().toUpperCase();
+  if(!raw) return;
+  const syms = raw.split(',').map(s=>s.trim()).filter(Boolean);
+  syms.forEach(sym => {
+    if(AL.watchlist.find(w=>w.sym===sym)) return;
+    const isCrypto = ['BTC','ETH','SOL','BNB','XRP','ADA','DOGE','AVAX','DOT','LINK','MATIC','NEAR','APT','ARB','INJ','SUI','PEPE','WIF'].includes(sym);
+    const isForex  = sym.includes('/') || sym.length===6;
+    const type = isCrypto?'crypto':isForex?'forex':'stock';
+    const market = isCrypto?'Cripto':isForex?'Forex':'Acciones';
+    AL.watchlist.unshift({sym, type, market});
+  });
+  LS.set('al-watchlist', AL.watchlist);
+  inp.value = '';
+  renderWatchlist();
+}
+
+function removeFromWatchlist(sym){
+  AL.watchlist = AL.watchlist.filter(w=>w.sym!==sym);
+  LS.set('al-watchlist', AL.watchlist);
+  renderWatchlist();
+}
+
+function renderWatchlist(){
+  const el = document.getElementById('al-watchlist');
+  if(!el) return;
+  const typeColor = {crypto:'var(--yellow)',forex:'var(--purple)',etf:'var(--blue)',bond:'var(--orange)',commodity:'var(--orange)',stock:'var(--green)'};
+  const typeIco   = {crypto:'₿',forex:'💱',etf:'📦',bond:'📄',commodity:'🛢️',stock:'📈'};
+  el.innerHTML = AL.watchlist.map(w=>`
+    <div style="padding:6px 4px;border-bottom:1px solid var(--border);cursor:default">
+      <div style="display:flex;align-items:center;gap:7px">
+        <span style="font-size:11px;width:16px;text-align:center">${typeIco[w.type]||'📊'}</span>
+        <span style="flex:1;font-size:12px;color:var(--text);font-weight:700">${w.sym}</span>
+        <span style="font-size:8px;padding:1px 6px;border-radius:3px;background:${typeColor[w.type]||'var(--green)'};background:${(typeColor[w.type]||'var(--green)')}22;color:${typeColor[w.type]||'var(--green)'};border:1px solid ${typeColor[w.type]||'var(--green)'}44">${w.market}</span>
+        <button onclick="removeFromWatchlist('${w.sym}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:0 3px" title="Quitar">✕</button>
+      </div>
+      ${w.note?`<div style="font-size:9px;color:var(--text3);margin-top:2px;padding-left:23px;line-height:1.4">${w.note}</div>`:''}
+    </div>`).join('');
+}
+
+// Intervalo
+function setInterval2(el, min){
+  AL.intervalMin = min;
+  document.querySelectorAll('.al-ivl').forEach(b=>{
+    b.classList.remove('on');
+    b.style.cssText='font-size:10px;padding:3px 8px';
+  });
+  el.classList.add('on');
+  el.style.color='var(--blue)'; el.style.borderColor='rgba(88,166,255,.4)'; el.style.background='var(--glow)';
+  if(AL.running){ stopScanner(); startScanner(); }
+}
+
+// Toggle scanner
+function toggleScanner(){
+  if(AL.running) stopScanner(); else startScanner();
+}
+
+function startScanner(){
+  if(!AL.watchlist.length){ alert('Agregá al menos un activo al watchlist primero.'); return; }
+  AL.running = true;
+  const btn = document.getElementById('al-start-btn');
+  const dot = document.getElementById('al-status-dot');
+  if(btn){ btn.textContent='⏹ Detener'; btn.style.background='rgba(248,81,73,.2)'; btn.style.color='var(--red)'; btn.style.border='1px solid rgba(248,81,73,.3)'; }
+  if(dot){ dot.style.background='var(--green)'; dot.style.boxShadow='0 0 6px rgba(63,185,80,.6)'; dot.style.animation='blink 1.5s infinite'; }
+  setStatus('🟢 Scanner activo — escaneando '+AL.watchlist.length+' activos');
+  // escaneo inmediato del primer activo, luego el resto en cadena
+  runNextScan();
+  // y programa el ciclo completo
+  AL.timer = setInterval(()=>{ AL.scanning=0; runNextScan(); }, AL.intervalMin*60*1000);
+  scheduleNextLabel();
+}
+
+function stopScanner(){
+  AL.running = false;
+  clearInterval(AL.timer);
+  AL.timer = null;
+  const btn = document.getElementById('al-start-btn');
+  const dot = document.getElementById('al-status-dot');
+  if(btn){ btn.textContent='▶ Iniciar Scanner'; btn.style.background=''; btn.style.color=''; btn.style.border=''; }
+  if(dot){ dot.style.background='var(--text3)'; dot.style.boxShadow='none'; dot.style.animation='none'; }
+  setStatus('⏹ Scanner detenido');
+  const nel = document.getElementById('al-next-scan'); if(nel) nel.textContent='—';
+}
+
+function scheduleNextLabel(){
+  const nel = document.getElementById('al-next-scan');
+  if(!nel||!AL.running) return;
+  const next = new Date(Date.now() + AL.intervalMin*60*1000);
+  nel.textContent = 'Próx. ciclo: '+next.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+}
+
+function setStatus(txt){
+  const el = document.getElementById('al-status-txt'); if(el) el.textContent = txt;
+}
+
+// Escanea el watchlist uno a uno con delay entre llamadas (no spamear API)
+async function runNextScan(){
+  if(!AL.running) return;
+  const sym = AL.watchlist[AL.scanning];
+  if(!sym){ AL.scanning=0; scheduleNextLabel(); return; }
+  setStatus('🔍 Escaneando '+sym.sym+' ('+( AL.scanning+1)+'/'+AL.watchlist.length+')...');
+  await scanAsset(sym);
+  AL.scanning++;
+  AL.scannedTotal++;
+  const el = document.getElementById('al-scanned'); if(el) el.textContent = AL.scannedTotal;
+  if(AL.scanning < AL.watchlist.length && AL.running){
+    setTimeout(runNextScan, 3000); // 3s entre llamadas para no sobrecargar API
+  } else {
+    AL.scanning = 0;
+    setStatus('✅ Ciclo completo · '+AL.watchlist.length+' activos analizados · '+new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}));
+    scheduleNextLabel();
+  }
+}
+
+// Análisis de un activo
+async function scanAsset(asset){
+  const filters = {
+    breakout: document.getElementById('f-breakout')?.checked,
+    bounce:   document.getElementById('f-bounce')?.checked,
+    rsi:      document.getElementById('f-rsi')?.checked,
+    macd:     document.getElementById('f-macd')?.checked,
+    volume:   document.getElementById('f-volume')?.checked,
+    trend:    document.getElementById('f-trend')?.checked,
+  };
+  const minRR = parseFloat(document.getElementById('al-min-rr')?.value)||2;
+  const enabledFilters = Object.entries(filters).filter(([,v])=>v).map(([k])=>k).join(', ');
+
+  // Contexto específico por activo para mejorar calidad del análisis
+  const assetContext = {
+    BTC:     'Bitcoin, crypto líder. Miedo extremo en el mercado (índice 13). Bajó de $106k. Resistencia en $88k.',
+    ETH:     'Ethereum, plataforma DeFi. Cayó de $3600. Soporte clave en $2000. ETFs pendientes de aprobación.',
+    DOGE:    'Dogecoin. Catalizador: DOGE-1 satélite SpaceX próximo lanzamiento. Muy sensible a tweets de Musk.',
+    SOL:     'Solana, rival de ETH. Alta velocidad, bajo costo. Fuerte adopción institucional reciente.',
+    GORK:    'Memecoin mencionada por Musk el 27/02/2026. Subió +520% en 24hs. Altísima volatilidad.',
+    NVDA:    'Nvidia, líder en chips IA. Bajó de máximos con el mercado tech. Earnings fuertes. Soporte en $100.',
+    TSLA:    'Tesla. Musk con conflictos políticos con DOGE gubernamental. Muy volátil y sensible a noticias.',
+    FCX:     'Freeport-McMoRan. Cobre como indicador de economía global. Sensible a China y construcción.',
+    AAPL:    'Apple. Defensivo premium. iPhone superciclo esperado con IA. Soporte en $210.',
+    META:    'Meta. IA + Realidad Aumentada. Crecimiento de ingresos por publicidad. Máximos históricos.',
+    AMZN:    'Amazon. AWS cloud líder. E-commerce dominante. Crecimiento sostenido de márgenes.',
+    SPY:     'ETF S&P 500. Refleja el mercado americano total. Afectado por tasas de la Fed.',
+    QQQ:     'ETF Nasdaq 100. Tecnológicas puras. Alta correlación con NVDA, AAPL, MSFT.',
+    GLD:     'ETF de Oro. En máximos históricos por incertidumbre y dolarización global.',
+    AL30:    'Bono soberano argentino 2030. Sensible al riesgo país, reservas del BCRA y política fiscal.',
+    PAMP:    'Pampa Energía. Principal generadora eléctrica argentina. Beneficiada por desregulación energética.',
+    GGAL:    'Grupo Galicia. Banco líder argentino. Muy sensible al tipo de cambio y política monetaria local.',
+    YPF:     'YPF petróleo estatal. Vaca Muerta es el catalizador clave. Alta volatilidad política.',
+    XAUUSD:  'Oro spot. En máximos históricos $2900+. Refugio ante inflación y tensiones geopolíticas.',
+    XBRUSD:  'Brent crudo. Sensible a OPEP+ y tensiones en Medio Oriente. Referencia energética global.',
+  };
+  const ctx = assetContext[asset.sym] || 'Activo sin contexto específico. Analizá con criterio técnico general.';
+
+  const prompt = `Sos un sistema experto de detección de patrones para trading. Analizá ${asset.sym} (${asset.market}) ahora mismo.
+
+CONTEXTO DEL ACTIVO: ${ctx}
+PATRONES A BUSCAR: ${enabledFilters}
+R:R MÍNIMO PARA ALERTAR: 1:${minRR}
+
+Respondé ÚNICAMENTE con este JSON (sin texto extra, sin markdown):
+{
+  "hasSignal": true/false,
+  "direction": "ALCISTA" o "BAJISTA" o "NEUTRAL",
+  "pattern": "nombre del patrón detectado",
+  "confidence": 1-10,
+  "price": "precio aproximado actual",
+  "entry": "precio de entrada sugerido",
+  "stop": "precio de stop-loss",
+  "target1": "primer target",
+  "target2": "segundo target",
+  "rr": "ratio R:R ej: 1:2.5",
+  "summary": "resumen de 2 líneas explicando qué detectaste y por qué es relevante",
+  "reasoning": "explicación de 3-4 líneas del razonamiento técnico+fundamental para que el trader aprenda",
+  "risk": "riesgo principal a considerar (1 línea)",
+  "indicators": {"rsi": "valor aprox", "trend": "alcista/bajista/lateral", "volume": "normal/alto/muy alto"}
+}
+
+Si no hay señal clara que justifique alertar (hasSignal: false), igual devolvé el JSON con los demás campos vacíos o null.`;
+
+  let result;
+  try {
+    if(API_KEY){
+      const res = await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:600,
+          messages:[{role:'user',content:prompt}]
+        })
+      });
+      const data = await res.json();
+      const txt = data.content?.map(c=>c.text||'').join('')||'';
+      const clean = txt.replace(/```json|```/g,'').trim();
+      result = JSON.parse(clean);
+    } else {
+      // Demo mode — simula detección aleatoria con datos realistas
+      await new Promise(r=>setTimeout(r,800));
+      result = getDemoAlert(asset.sym);
+    }
+  } catch(e){
+    console.warn('Scan error for', asset.sym, e);
+    return;
+  }
+
+  if(!result) return;
+
+  // Filtrar por R:R mínimo
+  const rrVal = parseFloat((result.rr||'1:0').split(':')[1])||0;
+  if(result.hasSignal && rrVal < minRR) result.hasSignal = false;
+
+  // Siempre guardamos el escaneo; solo mostramos prominente si hasSignal
+  const alert = {
+    id: Date.now()+Math.random(),
+    sym: asset.sym,
+    market: asset.market,
+    time: new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}),
+    date: new Date().toLocaleDateString('es-AR'),
+    verdict: null,  // null=pendiente, 'yes'=acordamos, 'no'=descartamos
+    ...result,
+  };
+
+  if(result.hasSignal){
+    if(result.direction==='ALCISTA') AL.bullCount++; else if(result.direction==='BAJISTA') AL.bearCount++;
+    AL.alerts.unshift(alert);
+    if(AL.alerts.length>100) AL.alerts=AL.alerts.slice(0,100);
+    LS.set('al-alerts', AL.alerts);
+    // Badge
+    const pending = AL.alerts.filter(a=>a.hasSignal&&a.verdict===null).length;
+    const nb = document.getElementById('nb-alertas'); if(nb) nb.textContent=pending||'';
+    updateAlertKPIs();
+    renderAlertFeed();
+    // Webhook N8N si configurado
+    const wh = document.getElementById('al-webhook')?.value.trim();
+    if(wh) sendWebhook(wh, alert);
+  }
+}
+
+// Demo alerts para modo sin API key
+function getDemoAlert(sym){
+  const patterns = ['Ruptura de resistencia','Rebote en soporte','RSI sobrevendido','MACD crossover alcista','Volumen anómalo 2.4x','Pullback a EMA20','Reversión en extremo','Doble piso','Bandera alcista','Triángulo ascendente'];
+  const hasSignal = Math.random() > 0.52;
+  const dir = hasSignal ? (Math.random()>0.4?'ALCISTA':'BAJISTA') : 'NEUTRAL';
+  const prices = {
+    // Cripto
+    BTC:82000, ETH:2200, DOGE:0.172, SOL:135, GORK:0.00031,
+    // Acciones USA
+    NVDA:118, TSLA:290, FCX:42, AAPL:228, META:615, AMZN:215,
+    // ETFs
+    SPY:590, QQQ:490, GLD:185,
+    // Argentina
+    AL30:68, PAMP:42, GGAL:38, YPF:28,
+    // Commodities
+    XAUUSD:2900, XBRUSD:76,
+    // Fallbacks
+    MSFT:415, GOOGL:195,
+  };
+  const base = prices[sym] || (Math.random()*200+50);
+  const isBull = dir==='ALCISTA';
+  const entry = base * (isBull?1.001:0.999);
+  const stop  = isBull ? entry*0.975 : entry*1.025;
+  const t1    = isBull ? entry*1.03  : entry*0.97;
+  const t2    = isBull ? entry*1.055 : entry*0.945;
+  const rrVal = Math.abs(t1-entry)/Math.abs(entry-stop);
+  return {
+    hasSignal,
+    direction: dir,
+    pattern: hasSignal ? patterns[Math.floor(Math.random()*patterns.length)] : 'Sin señal clara',
+    confidence: hasSignal ? Math.floor(Math.random()*3)+6 : Math.floor(Math.random()*4)+2,
+    price: '$'+base.toFixed(2),
+    entry: hasSignal?'$'+entry.toFixed(2):null,
+    stop:  hasSignal?'$'+stop.toFixed(2):null,
+    target1: hasSignal?'$'+t1.toFixed(2):null,
+    target2: hasSignal?'$'+t2.toFixed(2):null,
+    rr: hasSignal?'1:'+rrVal.toFixed(1):null,
+    summary: hasSignal
+      ? `${sym} muestra ${dir==='ALCISTA'?'momentum alcista':'presión bajista'} con ${patterns[0].toLowerCase()}. Contexto técnico favorable.`
+      : `${sym} en consolidación sin señal clara. Mejor esperar confirmación.`,
+    reasoning: hasSignal
+      ? `El precio ${isBull?'superó':'perdió'} el nivel clave con confirmación de volumen. Los indicadores técnicos están alineados en dirección ${dir.toLowerCase()}. El contexto de mercado general es favorable para el setup. Esta es la lógica que tenés que buscar en el gráfico para validar la entrada.`
+      : `No hay alineación clara entre indicadores. El RSI está en zona neutral y el volumen es normal. En estas condiciones es mejor quedarse afuera y esperar un setup más claro.`,
+    risk: hasSignal ? 'Verificar si hay noticias de alto impacto en las próximas horas antes de entrar.' : 'N/A',
+    indicators: { rsi: Math.floor(Math.random()*60+20)+'', trend: isBull?'alcista':'bajista', volume: ['normal','alto','muy alto'][Math.floor(Math.random()*3)] },
+    _demo: true,
+  };
+}
+
+// N8N Webhook
+async function sendWebhook(url, alert){
+  try{
+    await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        source:'TraderOS',
+        symbol: alert.sym,
+        direction: alert.direction,
+        pattern: alert.pattern,
+        confidence: alert.confidence,
+        entry: alert.entry,
+        stop: alert.stop,
+        target: alert.target1,
+        rr: alert.rr,
+        summary: alert.summary,
+        reasoning: alert.reasoning,
+        time: alert.time,
+        date: alert.date,
+      })
+    });
+  }catch(e){ console.warn('Webhook error:', e); }
+}
+
+// Veredicto del usuario (acordamos / descartamos)
+function setVerdict(id, v){
+  const alert = AL.alerts.find(a=>a.id===id); if(!alert) return;
+  alert.verdict = v;
+  // Precisión
+  if(v==='yes'){ AL.confirmed++; } AL.total++;
+  LS.set('al-alerts', AL.alerts);
+  updateAlertKPIs();
+  renderAlertFeed();
+  // Actualizar badge
+  const pending = AL.alerts.filter(a=>a.hasSignal&&a.verdict===null).length;
+  const nb = document.getElementById('nb-alertas'); if(nb) nb.textContent=pending||'0';
+  // Si acordamos, preguntar si quiere registrar en el diario
+  if(v==='yes'){
+    setTimeout(()=>{
+      if(confirm(`✅ Acordamos con ${alert.sym}.\n\n¿Querés ir al Diario a registrar la operación ahora?`)){
+        go(document.querySelector('.ni[onclick*=diario]'),'diario');
+        // Pre-llenar el diario
+        const ta=document.getElementById('ta'); if(ta) ta.value=alert.sym;
+        const tsetup=document.getElementById('tsetup'); if(tsetup) tsetup.value='Ruptura de resistencia';
+      }
+    }, 200);
+  }
+}
+
+function updateAlertKPIs(){
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  s('al-bull-count', AL.bullCount);
+  s('al-bear-count', AL.bearCount);
+  s('al-scanned', AL.scannedTotal);
+  const acc = AL.total>0 ? Math.round(AL.confirmed/AL.total*100)+'%' : '—';
+  s('al-accuracy', acc);
+}
+
+function filterAlerts(){
+  renderAlertFeed();
+}
+
+function clearAlerts(){
+  if(!confirm('¿Borrar todas las alertas?')) return;
+  AL.alerts=[]; AL.bullCount=0; AL.bearCount=0;
+  LS.set('al-alerts', AL.alerts);
+  updateAlertKPIs(); renderAlertFeed();
+  const nb=document.getElementById('nb-alertas'); if(nb) nb.textContent='0';
+}
+
+function renderAlertFeed(){
+  const el = document.getElementById('al-feed'); if(!el) return;
+  const filter = document.getElementById('al-filter')?.value||'all';
+  let alerts = AL.alerts.filter(a=>a.hasSignal);
+  if(filter==='bull')    alerts = alerts.filter(a=>a.direction==='ALCISTA');
+  if(filter==='bear')    alerts = alerts.filter(a=>a.direction==='BAJISTA');
+  if(filter==='pending') alerts = alerts.filter(a=>a.verdict===null);
+
+  if(!alerts.length){
+    el.innerHTML=`<div style="padding:48px;text-align:center;color:var(--text3)">
+      <div style="font-size:28px;margin-bottom:10px">${AL.running?'🔍':'🔔'}</div>
+      <div style="font-size:12px">${AL.running?'Escaneando... las alertas aparecerán acá':'Sin alertas para mostrar'}</div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = alerts.map(a => {
+    const isBull = a.direction==='ALCISTA';
+    const isPending = a.verdict===null;
+    const isYes = a.verdict==='yes';
+    const isNo  = a.verdict==='no';
+    const conf  = a.confidence||0;
+    const confColor = conf>=8?'var(--green)':conf>=6?'var(--yellow)':'var(--orange)';
+    const confBar = '█'.repeat(conf)+'░'.repeat(10-conf);
+
+    return `<div style="padding:16px 18px;border-bottom:1px solid var(--border);position:relative;${isNo?'opacity:.5':''}">
+      <!-- Header -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <div style="width:36px;height:36px;border-radius:8px;background:${isBull?'rgba(63,185,80,.15)':'rgba(248,81,73,.15)'};border:1px solid ${isBull?'rgba(63,185,80,.3)':'rgba(248,81,73,.3)'};display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${isBull?'📈':'📉'}</div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:15px;font-weight:800;font-family:Syne,sans-serif;color:var(--text)">${a.sym}</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:3px;font-weight:700;background:${isBull?'rgba(63,185,80,.15)':'rgba(248,81,73,.15)'};color:${isBull?'var(--green)':'var(--red)'};border:1px solid ${isBull?'rgba(63,185,80,.3)':'rgba(248,81,73,.3)'}">${a.direction}</span>
+            <span style="font-size:9px;color:var(--text3)">${a.market}</span>
+            ${a._demo?`<span style="font-size:8px;padding:1px 5px;border-radius:3px;background:rgba(188,140,255,.1);color:var(--purple);border:1px solid rgba(188,140,255,.2)">DEMO</span>`:''}
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">${a.pattern} · ${a.time} ${a.date}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:9px;color:var(--text3)">Confianza</div>
+          <div style="font-size:11px;color:${confColor};font-family:monospace">${confBar}</div>
+          <div style="font-size:10px;color:${confColor};font-weight:700">${conf}/10</div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div style="font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:10px;padding:8px 10px;background:var(--bg3);border-radius:5px;border-left:3px solid ${isBull?'var(--green)':'var(--red)'}">${a.summary||''}</div>
+
+      <!-- Niveles -->
+      ${a.entry?`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px">
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:7px;text-align:center">
+          <div style="font-size:9px;color:var(--text3);margin-bottom:2px">ENTRADA</div>
+          <div style="font-size:12px;font-weight:700;color:var(--blue)">${a.entry}</div>
+        </div>
+        <div style="background:rgba(248,81,73,.05);border:1px solid rgba(248,81,73,.2);border-radius:5px;padding:7px;text-align:center">
+          <div style="font-size:9px;color:var(--text3);margin-bottom:2px">STOP</div>
+          <div style="font-size:12px;font-weight:700;color:var(--red)">${a.stop}</div>
+        </div>
+        <div style="background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:5px;padding:7px;text-align:center">
+          <div style="font-size:9px;color:var(--text3);margin-bottom:2px">TARGET 1</div>
+          <div style="font-size:12px;font-weight:700;color:var(--green)">${a.target1}</div>
+        </div>
+        <div style="background:rgba(63,185,80,.08);border:1px solid rgba(63,185,80,.25);border-radius:5px;padding:7px;text-align:center">
+          <div style="font-size:9px;color:var(--text3);margin-bottom:2px">TARGET 2</div>
+          <div style="font-size:12px;font-weight:700;color:var(--green)">${a.target2}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:11px">
+        <span style="color:var(--text3)">R:R</span><span style="color:var(--yellow);font-weight:700">${a.rr}</span>
+        <span style="color:var(--text3);margin-left:8px">RSI</span><span style="color:var(--text2)">${a.indicators?.rsi||'—'}</span>
+        <span style="color:var(--text3)">Tendencia</span><span style="color:var(--text2)">${a.indicators?.trend||'—'}</span>
+        <span style="color:var(--text3)">Volumen</span><span style="color:var(--text2)">${a.indicators?.volume||'—'}</span>
+      </div>`:''}
+
+      <!-- Razonamiento colapsable -->
+      <details style="margin-bottom:10px">
+        <summary style="font-size:10px;color:var(--blue);cursor:pointer;padding:4px 0">🎓 Ver razonamiento completo (aprendizaje)</summary>
+        <div style="font-size:11px;color:var(--text2);line-height:1.7;padding:8px 10px;margin-top:6px;background:rgba(88,166,255,.04);border-radius:5px;border:1px solid rgba(88,166,255,.1)">${a.reasoning||''}</div>
+      </details>
+
+      ${a.risk?`<div style="font-size:10px;color:var(--orange);padding:5px 8px;background:rgba(240,136,62,.06);border-radius:4px;border:1px solid rgba(240,136,62,.15);margin-bottom:10px">⚠️ ${a.risk}</div>`:''}
+
+      <!-- Botones de veredicto -->
+      ${isPending ? `
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:10px;color:var(--text3);flex:1">¿Operamos?</span>
+        <button onclick="setVerdict(${a.id},'yes')" style="padding:7px 18px;border-radius:5px;border:1px solid rgba(63,185,80,.4);background:rgba(63,185,80,.1);color:var(--green);font-family:JetBrains Mono,monospace;font-size:11px;font-weight:700;cursor:pointer">✅ Sí, operamos</button>
+        <button onclick="setVerdict(${a.id},'no')"  style="padding:7px 18px;border-radius:5px;border:1px solid rgba(248,81,73,.3);background:rgba(248,81,73,.08);color:var(--red);font-family:JetBrains Mono,monospace;font-size:11px;cursor:pointer">❌ No, descarto</button>
+        <button onclick="go(document.querySelector('.ni[onclick*=charts]'),'charts');curSym='NASDAQ:${a.sym}';setTimeout(()=>initChart('NASDAQ:${a.sym}'),200)" style="padding:7px 12px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:JetBrains Mono,monospace;font-size:11px;cursor:pointer">📊 Ver gráfico</button>
+      </div>` :
+      `<div style="font-size:11px;padding:6px 12px;border-radius:5px;display:inline-flex;align-items:center;gap:6px;background:${isYes?'rgba(63,185,80,.1)':'rgba(248,81,73,.08)'};border:1px solid ${isYes?'rgba(63,185,80,.3)':'rgba(248,81,73,.2)'};color:${isYes?'var(--green)':'var(--red)'}">
+        ${isYes?'✅ Acordamos — operación tomada':'❌ Descartada'}
+      </div>`}
+    </div>`;
+  }).join('');
+}
+
+// Compartir alertas a WhatsApp
+function shareAlertsWA(){
+  const pending = AL.alerts.filter(a=>a.hasSignal&&a.verdict===null);
+  if(!pending.length){ alert('No hay alertas pendientes para compartir.'); return; }
+  let msg = '🔔 *TraderOS — Alertas del Scanner IA*\n\n';
+  pending.slice(0,5).forEach(a=>{
+    msg += `${a.direction==='ALCISTA'?'📈':'📉'} *${a.sym}* — ${a.direction}\n`;
+    msg += `📊 ${a.pattern}\n`;
+    if(a.entry) msg += `Entrada: ${a.entry} | Stop: ${a.stop} | T1: ${a.target1} | R:R: ${a.rr}\n`;
+    msg += `_${a.summary}_\n\n`;
+  });
+  msg += '_TraderOS v3.1 · Análisis educativo, no asesoramiento financiero._';
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  renderSymTabs('tech');
+  setTimeout(()=>{ if(document.getElementById('p-charts').classList.contains('on')) initChart(curSym); },400);
+});
+if(USERNAME){ initUI(); publishMyStats(); }
+window.addEventListener('resize',()=>{ if(MY_TRADES.length) updateStats(); });
+// Auto refresh community every 60s
+setInterval(()=>{
+  if(document.getElementById('p-leaderboard').classList.contains('on')) refreshLeaderboard();
+  if(document.getElementById('p-feed').classList.contains('on')) refreshFeed();
+  if(document.getElementById('p-dashboard').classList.contains('on')) refreshDashboardCommunity();
+},60000);
+</script>
+
+  <button class="pwa-reload" onclick="location.reload()">Actualizar</button>
+  <button class="pwa-later" onclick="document.getElementById('pwa-update').classList.add('hide')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0 2px">✕</button>
+</div>
+
+<script>
+// ── PWA SERVICE WORKER + INSTALL ─────────────────────
+let deferredPrompt = null;
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(reg => {
+      console.log('[TraderOS] SW registrado:', reg.scope);
+      // Escuchar actualizaciones
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            // Hay una nueva versión lista
+            showUpdateToast();
+          }
+        });
+      });
+    })
+    .catch(err => console.log('[TraderOS] SW error:', err));
+
+  // Escuchar mensajes del SW
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data?.type === 'SW_UPDATED') showUpdateToast();
+    if (e.data?.type === 'NAVIGATE') {
+      const nav = document.querySelector(`.ni[onclick*="${e.data.page}"]`);
+      if (nav) go(nav, e.data.page);
+    }
+  });
+}
+
+// Capturar el evento de instalación nativa
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Mostrar banner solo si no lo descartaron antes
+  if (!localStorage.getItem('pwa-dismissed')) {
+    setTimeout(() => {
+      document.getElementById('pwa-banner').classList.remove('hide');
+    }, 3000); // 3s después de cargar
+  }
+});
+
+// Instalar PWA
+async function installPWA() {
+  if (!deferredPrompt) {
+    // iOS: mostrar instrucciones manuales
+    showIOSInstructions();
+    return;
+  }
+  deferredPrompt.prompt();
+  const { outcome } = await deferredPrompt.userChoice;
+  console.log('[TraderOS] Install outcome:', outcome);
+  deferredPrompt = null;
+  dismissBanner();
+}
+
+function dismissBanner() {
+  document.getElementById('pwa-banner').classList.add('hide');
+  localStorage.setItem('pwa-dismissed', '1');
+}
+
+function showUpdateToast() {
+  document.getElementById('pwa-update').classList.remove('hide');
+}
+
+// iOS no soporta beforeinstallprompt — mostramos instrucciones
+function showIOSInstructions() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) {
+    alert('Para instalar TraderOS en iOS:
+
+1. Tocá el botón Compartir ( ↑ ) en Safari
+2. Seleccioná "Agregar a pantalla de inicio"
+3. Tocá "Agregar"
+
+¡Listo! Vas a tener el ícono de TraderOS en tu pantalla.');
+  } else {
+    alert('En Android:
+
+1. Tocá el menú ⋮ del navegador
+2. Seleccioná "Agregar a pantalla de inicio" o "Instalar app"
+3. Confirmá
+
+¡Listo!');
+  }
+}
+
+// Detectar si ya está instalado como PWA
+window.addEventListener('appinstalled', () => {
+  console.log('[TraderOS] App instalada como PWA ✅');
+  dismissBanner();
+  // Pequeña celebración
+  setTimeout(() => {
+    const chip = document.getElementById('streak-chip');
+    if (chip) { const orig = chip.textContent; chip.textContent = '📱 App instalada ✅'; setTimeout(()=>chip.textContent=orig, 3000); }
+  }, 500);
+});
+
+// Shortcut navigation desde el manifest
+const urlParams = new URLSearchParams(window.location.search);
+const initPage = urlParams.get('page');
+if (initPage) {
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      const nav = document.querySelector(`.ni[onclick*="${initPage}"]`);
+      if (nav) go(nav, initPage);
+    }, 800);
+  });
+}
+</script>
+
+<!-- ═══ PWA STANDALONE — MANIFEST + SW EMBEBIDOS ═══ -->
+<script>
+(function(){
+  // Manifest loaded from manifest.json
+    // ── 2. SERVICE WORKER via Blob ────────────────────
+  if('serviceWorker' in navigator){
+    const swCode = "\nconst VERSION = 'traderos-v3.2';\nconst CACHE = VERSION;\nself.addEventListener('install', e => {\n  self.skipWaiting();\n});\nself.addEventListener('activate', e => {\n  e.waitUntil(\n    caches.keys().then(keys =>\n      Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))\n    ).then(()=>self.clients.claim())\n     .then(()=>self.clients.matchAll().then(cs=>cs.forEach(c=>c.postMessage({type:'SW_UPDATED',version:VERSION}))))\n  );\n});\nself.addEventListener('fetch', e => {\n  if(e.request.method!=='GET') return;\n  e.respondWith(\n    fetch(e.request).then(r=>{\n      const rc=r.clone();\n      caches.open(CACHE).then(c=>c.put(e.request,rc));\n      return r;\n    }).catch(()=>caches.match(e.request))\n  );\n});\nself.addEventListener('push', e => {\n  if(!e.data) return;\n  let d; try{d=e.data.json();}catch(x){d={title:'TraderOS',body:e.data.text()};}\n  e.waitUntil(self.registration.showNotification(\n    d.title||'🔔 TraderOS — '+( d.sym||'Alerta'),\n    {body:d.body||d.summary||'Nueva alerta de trading',icon:d.icon||'',badge:d.badge||'',tag:d.sym||'traderos',renotify:true,requireInteraction:true,vibrate:[200,100,200],data:{url:d.url||'./'},actions:[{action:'open',title:'📊 Ver alerta'},{action:'dismiss',title:'✕ Descartar'}]}\n  ));\n});\nself.addEventListener('notificationclick', e => {\n  e.notification.close();\n  if(e.action==='dismiss') return;\n  e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(cs=>{\n    const w=cs.find(c=>c.focused||c.visibilityState==='visible');\n    if(w){w.focus();w.postMessage({type:'NAVIGATE',page:'alertas'});return;}\n    return self.clients.openWindow(e.notification.data?.url||'./');\n  }));\n});\n";
+    const swBlob = new Blob([swCode], {type:'application/javascript'});
+    const swUrl  = URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swUrl, {scope:'./'})
+      .then(reg => {
+        console.log('[TraderOS] SW registrado via blob ✅');
+        reg.addEventListener('updatefound', () => {
+          const nw = reg.installing;
+          nw.addEventListener('statechange', () => {
+            if(nw.state==='installed' && navigator.serviceWorker.controller) showUpdateToast();
+          });
+        });
+      }).catch(e => console.warn('[TraderOS] SW error:', e));
+    navigator.serviceWorker.addEventListener('message', e => {
+      if(e.data?.type==='SW_UPDATED') showUpdateToast();
+      if(e.data?.type==='NAVIGATE'){
+        const nav=document.querySelector(`.ni[onclick*="${e.data.page}"]`);
+        if(nav) go(nav, e.data.page);
+      }
+    });
+  }
+
+  // ── 3. INSTALL BANNER ─────────────────────────────
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); deferredPrompt = e;
+    if(!localStorage.getItem('pwa-dismissed'))
+      setTimeout(()=>{ const b=document.getElementById('pwa-banner'); if(b) b.style.display='flex'; }, 3000);
+  });
+  window.installPWA = async function(){
+    if(!deferredPrompt){ showIOSInstructions(); return; }
+    deferredPrompt.prompt();
+    const {outcome} = await deferredPrompt.userChoice;
+    deferredPrompt = null; dismissBanner();
+  };
+  window.dismissBanner = function(){
+    const b=document.getElementById('pwa-banner'); if(b) b.style.display='none';
+    localStorage.setItem('pwa-dismissed','1');
+  };
+  window.showUpdateToast = function(){
+    const t=document.getElementById('pwa-update'); if(t) t.style.display='flex';
+  };
+  function showIOSInstructions(){
+    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+    alert(isIOS
+      ? 'Para instalar en iPhone:\n\n1. Tocá el botón Compartir ( ↑ ) en Safari\n2. "Agregar a pantalla de inicio"\n3. Tocá "Agregar"'
+      : 'Para instalar en Android:\n\n1. Menú ⋮ del navegador\n2. "Añadir a pantalla de inicio"\n3. Confirmar'
+    );
+  }
+  window.addEventListener('appinstalled', ()=>{
+    dismissBanner();
+    const c=document.getElementById('streak-chip');
+    if(c){const o=c.textContent;c.textContent='📱 App instalada ✅';setTimeout(()=>c.textContent=o,3000);}
+  });
+
+  // ── 4. SHORTCUT NAVIGATION ────────────────────────
+  const p = new URLSearchParams(location.search).get('page');
+  if(p) window.addEventListener('DOMContentLoaded',()=>setTimeout(()=>{
+    const nav=document.querySelector(`.ni[onclick*="${p}"]`); if(nav) go(nav,p);
+  },800));
+})();
+</script>
+
+<!-- PWA Install Banner -->
+<div id="pwa-banner" style="display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9998;background:#0d1117;border:1px solid #58a6ff;border-radius:10px;padding:12px 16px;align-items:center;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.6);min-width:280px;max-width:360px;animation:slideUp .3s ease">
+  <span style="font-size:26px;flex-shrink:0">📱</span>
+  <div style="flex:1">
+    <strong style="font-size:12px;color:#e6edf3;display:block;margin-bottom:2px">Instalá TraderOS</strong>
+    <span style="font-size:10px;color:#484f58">Agregalo a tu pantalla de inicio</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:5px;flex-shrink:0">
+    <button onclick="installPWA()" style="padding:5px 12px;background:#58a6ff;color:#fff;border:none;border-radius:5px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit">Instalar</button>
+    <button onclick="dismissBanner()" style="padding:3px 12px;background:none;color:#484f58;border:none;font-size:9px;cursor:pointer;font-family:inherit">Ahora no</button>
+  </div>
+</div>
+
+<!-- PWA Update Toast -->
+<div id="pwa-update" style="display:none;position:fixed;top:56px;right:12px;z-index:9997;background:#0d1117;border:1px solid #3fb950;border-radius:8px;padding:10px 14px;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.5);font-size:11px;max-width:300px">
+  <span style="font-size:18px;flex-shrink:0">🚀</span>
+  <div style="flex:1;color:#8b949e"><strong style="color:#3fb950;display:block;margin-bottom:1px">Nueva versión disponible</strong>Hay cambios nuevos en TraderOS</div>
+  <button onclick="location.reload()" style="padding:4px 10px;background:rgba(63,185,80,.15);color:#3fb950;border:1px solid rgba(63,185,80,.3);border-radius:4px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0">Actualizar</button>
+  <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;color:#484f58;cursor:pointer;font-size:16px;padding:0 2px;flex-shrink:0">✕</button>
+</div>
+
+</body>
+</html>
