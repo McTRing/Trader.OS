@@ -674,9 +674,23 @@ body{padding-bottom:env(safe-area-inset-bottom);}
         <div class="ch">
           <span class="ct">🤖 Análisis de Mercado con IA</span>
           <div style="display:flex;gap:6px">
-            <select class="fi" id="ai-sym" style="padding:3px 8px;font-size:10px;width:130px">
-              <option>NVDA</option><option>AAPL</option><option>TSLA</option><option>META</option>
-              <option>BTC</option><option>ETH</option><option>SOL</option><option>SPY / S&P 500</option>
+            <select class="fi" id="ai-sym" style="padding:3px 8px;font-size:10px;width:140px">
+              <optgroup label="— Cripto —">
+                <option>BTC</option><option>ETH</option><option>SOL</option><option>DOGE</option><option>GORK</option>
+              </optgroup>
+              <optgroup label="— Acciones USA —">
+                <option>NVDA</option><option>TSLA</option><option>AAPL</option><option>META</option>
+                <option>AMZN</option><option>FCX</option>
+              </optgroup>
+              <optgroup label="— ETFs —">
+                <option>SPY</option><option>QQQ</option><option>GLD</option>
+              </optgroup>
+              <optgroup label="— Argentina —">
+                <option>YPFD</option><option>PAMP</option><option>GGAL</option><option>AL30</option>
+              </optgroup>
+              <optgroup label="— Commodities —">
+                <option>XAUUSD</option><option>XBRUSD</option>
+              </optgroup>
             </select>
             <button class="btn bpu" onclick="runAI()" id="ai-btn">🤖 Analizar</button>
             <button class="btn bwa" onclick="shareAItoWhatsApp()" id="ai-wa-btn" style="display:none">📱 WA</button>
@@ -719,27 +733,72 @@ body{padding-bottom:env(safe-area-inset-bottom);}
 
   <!-- ═══ APRENDIZAJE ═══ -->
   <div class="page" id="p-aprendizaje">
-    <div class="kpi-row k3">
-      <div class="kpi b"><div class="kl">Progreso</div><div class="kv b" id="lp">0%</div><div class="ks" id="lps">0/10</div></div>
+    <div class="kpi-row k4" style="margin-bottom:12px">
+      <div class="kpi b"><div class="kl">Progreso</div><div class="kv b" id="lp">0%</div><div class="ks" id="lps">0/9</div></div>
       <div class="kpi g"><div class="kl">Completados</div><div class="kv g" id="ld">0</div><div class="ks">módulos</div></div>
-      <div class="kpi y"><div class="kl">Próximo</div><div class="kv y" id="ln" style="font-size:11px">—</div><div class="ks">en progreso</div></div>
+      <div class="kpi y"><div class="kl">Nivel actual</div><div class="kv y" id="l-nivel" style="font-size:11px">Básico</div><div class="ks">en progreso</div></div>
+      <div class="kpi p"><div class="kl">Próximo</div><div class="kv p" id="ln" style="font-size:10px">—</div><div class="ks">módulo</div></div>
     </div>
-    <div class="card">
-      <div class="ch"><span class="ct">Ruta de Aprendizaje — @nosoyliquidez</span><span class="ctag">Click = avanzar</span></div>
-      <div class="cb"><div class="mgrid" id="mod-grid"></div></div>
+    <div class="row" style="align-items:flex-start">
+      <!-- Lista de módulos -->
+      <div class="card" style="width:280px;min-width:240px">
+        <div class="ch"><span class="ct">📚 Módulos</span><span class="ctag">9 lecciones</span></div>
+        <div class="cb p0"><div id="mod-grid" style="display:flex;flex-direction:column"></div></div>
+      </div>
+      <!-- Contenido del módulo activo -->
+      <div class="card" style="flex:1" id="mod-content-card">
+        <div class="ch" id="mod-content-header">
+          <span class="ct">👈 Seleccioná un módulo</span>
+        </div>
+        <div class="cb" id="mod-content-body" style="max-height:520px;overflow-y:auto">
+          <div style="text-align:center;padding:40px 20px;color:var(--text3)">
+            <div style="font-size:48px;margin-bottom:16px">📚</div>
+            <div style="font-size:13px">Elegí un módulo de la izquierda para empezar a aprender</div>
+          </div>
+        </div>
+        <div id="mod-content-footer" style="display:none;padding:12px 14px;border-top:1px solid var(--border);display:none">
+          <button class="btn bp" id="mod-complete-btn" onclick="completeCurrentMod()" style="width:100%;padding:10px">✅ Marcar como completado</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ═══ CALENDARIO ═══ -->
   <div class="page" id="p-calendario">
-    <div class="card">
-      <div class="ch"><span class="ct">Calendario Económico — TradingView</span><span class="ctag bl">Live</span></div>
-      <div class="cb p0">
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events-calendar.js" async>
-          {"colorTheme":"dark","isTransparent":true,"width":"100%","height":"620","locale":"es","importanceFilter":"-1,0,1","countryFilter":"ar,us,eu,gb,jp,mx,br,cn"}
-          </script>
+    <div class="kpi-row k3" style="margin-bottom:12px">
+      <div class="kpi b"><div class="kl">Hoy</div><div class="kv b" id="cal-today">—</div><div class="ks">eventos</div></div>
+      <div class="kpi y"><div class="kl">Alto impacto</div><div class="kv y" id="cal-high">—</div><div class="ks">esta semana</div></div>
+      <div class="kpi g"><div class="kl">Próximo</div><div class="kv g" id="cal-next" style="font-size:10px">—</div><div class="ks">evento clave</div></div>
+    </div>
+    <div class="row">
+      <div class="card" style="flex:1">
+        <div class="ch">
+          <span class="ct">📅 Calendario Económico</span>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select class="fi" id="cal-filter" style="padding:3px 8px;font-size:10px" onchange="renderCal()">
+              <option value="all">Todos</option>
+              <option value="high">⚠️ Alto impacto</option>
+              <option value="us">🇺🇸 USA</option>
+              <option value="ar">🇦🇷 Argentina</option>
+              <option value="crypto">₿ Cripto</option>
+            </select>
+            <button class="btn bg2b" onclick="loadCalendar()" style="padding:4px 10px;font-size:10px">↻ Actualizar</button>
+          </div>
+        </div>
+        <div class="cb p0">
+          <div id="cal-body" style="overflow-y:auto;max-height:520px"></div>
+        </div>
+      </div>
+      <div class="card" style="width:260px;min-width:220px">
+        <div class="ch"><span class="ct">🎯 Eventos Clave</span></div>
+        <div class="cb">
+          <div id="cal-upcoming" style="display:flex;flex-direction:column;gap:8px"></div>
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+            <div style="font-size:9px;text-transform:uppercase;color:var(--text3);margin-bottom:8px">Fuente externa</div>
+            <a href="https://es.investing.com/economic-calendar/" target="_blank" class="btn bg2b" style="display:block;text-align:center;font-size:10px;padding:8px">📅 Investing.com →</a>
+            <a href="https://www.forexfactory.com/calendar" target="_blank" class="btn bg2b" style="display:block;text-align:center;font-size:10px;padding:8px;margin-top:6px">📅 Forex Factory →</a>
+            <a href="https://www.bcra.gob.ar/PublicacionesEstadisticas/Calendario_fechas_de_publicacion.asp" target="_blank" class="btn bg2b" style="display:block;text-align:center;font-size:10px;padding:8px;margin-top:6px">🇦🇷 BCRA Argentina →</a>
+          </div>
         </div>
       </div>
     </div>
@@ -1100,15 +1159,104 @@ let lastAiAnalysis = '';
 
 function defaultMods(){return[
   {id:0,name:"Introducción al Trading",desc:"Tipos de mercados e instrumentos base.",ico:"📚",p:0,c:"b"},
-  {id:1,name:"Cómo Funciona el Mercado",desc:"Bull/Bear, participantes, oferta y demanda.",ico:"🌍",p:0,c:"b"},
-  {id:2,name:"Análisis Fundamental",desc:"Earnings, PIB, tasas de interés, macro.",ico:"📊",p:0,c:"y"},
-  {id:3,name:"Velas Japonesas",desc:"Candlesticks y todos los patrones clave.",ico:"🕯️",p:0,c:"y"},
-  {id:4,name:"Soportes y Resistencias",desc:"Niveles clave y zonas de oferta/demanda.",ico:"📐",p:0,c:"y"},
-  {id:5,name:"Indicadores Técnicos",desc:"RSI, MACD, Medias Móviles, Bollinger.",ico:"📉",p:0,c:"b"},
-  {id:6,name:"Patrones de Precio",desc:"H&S, doble techo, triángulos, banderas.",ico:"🔺",p:0,c:"b"},
-  {id:7,name:"Gestión de Riesgo",desc:"Position sizing, stop-loss, ratio R:R.",ico:"🛡️",p:0,c:"g"},
-  {id:8,name:"Desarrollo de Estrategia",desc:"Backtesting, plan de trading, journaling.",ico:"⚙️",p:0,c:"g"},
-  {id:9,name:"Psicología del Trading",desc:"Control emocional, disciplina, mindset.",ico:"🧠",p:0,c:"g"},
+    {id:1, name:"Cómo Funciona el Mercado", ico:"🌍", c:"b", p:0,
+    nivel:"Básico", tiempo:"15 min",
+    desc:"Bull/Bear, participantes, oferta y demanda.",
+    contenido:[
+      {t:"¿Qué es el mercado?", txt:"El mercado es simplemente el lugar donde compradores y vendedores se encuentran para intercambiar activos. Cuando hay más compradores que vendedores, el precio sube (mercado Bull 🐂). Cuando hay más vendedores, el precio baja (mercado Bear 🐻)."},
+      {t:"Participantes clave", txt:"• Minoristas (vos): operamos pequeños volúmenes\n• Market Makers: dan liquidez, siempre están en ambos lados\n• Institucionales: fondos, bancos, mueven el mercado\n• Algoritmos (HFT): ejecutan miles de órdenes por segundo"},
+      {t:"Oferta y Demanda", txt:"El precio de cualquier activo lo determina la oferta (cantidad disponible) vs la demanda (cuánto quiere comprar la gente). Si Apple reporta ganancias récord → más gente quiere AAPL → precio sube."},
+      {t:"💡 Consejo práctico", txt:"Antes de operar cualquier activo, preguntate: ¿quién está comprando y por qué? ¿quién está vendiendo? La respuesta te da el contexto fundamental básico."}
+    ]
+  },
+  {id:2, name:"Análisis Fundamental", ico:"📊", c:"y", p:0,
+    nivel:"Básico", tiempo:"20 min",
+    desc:"Earnings, PIB, tasas de interés, macro.",
+    contenido:[
+      {t:"¿Qué es el análisis fundamental?", txt:"Es analizar el VALOR REAL de un activo basándose en datos económicos y financieros. La pregunta es: ¿está barato o caro respecto a lo que vale realmente?"},
+      {t:"Earnings (Ganancias)", txt:"Cada trimestre, las empresas reportan cuánto ganaron. Si ganan más de lo esperado → precio sube (beat). Si ganan menos → precio cae (miss). En TraderOS miramos el calendario para saber cuándo son los earnings de nuestros activos."},
+      {t:"Tasas de interés (Fed)", txt:"Cuando la Fed SUBE tasas → el dinero se va a bonos (más seguros y rentables) → acciones y cripto bajan. Cuando BAJA tasas → el dinero fluye a activos de riesgo → acciones y cripto suben. Este es el driver macro más importante."},
+      {t:"PIB y empleo", txt:"PIB alto = economía sana = empresas ganan más = acciones suben. Desempleo bajo = consumo alto = buenos earnings. Inflación alta = Fed sube tasas = presión bajista."},
+      {t:"💡 Consejo práctico", txt:"Para tus activos argentinos (YPFD, PAMP, GGAL) mirá además: riesgo país, tipo de cambio y decisiones del BCRA. Para cripto: adopción institucional, regulación y narrativas de mercado."}
+    ]
+  },
+  {id:3, name:"Velas Japonesas", ico:"🕯️", c:"y", p:0,
+    nivel:"Básico", tiempo:"25 min",
+    desc:"Candlesticks y todos los patrones clave.",
+    contenido:[
+      {t:"Anatomía de una vela", txt:"Cada vela tiene: Cuerpo (diferencia entre apertura y cierre) + Mechas (máximo y mínimo del período). Vela verde = cerró más arriba de como abrió (compradores ganaron). Vela roja = cerró más abajo (vendedores ganaron)."},
+      {t:"Patrones de reversión alcista 🟢", txt:"• Martillo (Hammer): cuerpo pequeño arriba, mecha larga abajo → rechazo de precios bajos, señal de compra\n• Envolvente alcista: vela roja seguida de vela verde más grande → compradores tomaron el control\n• Estrella del amanecer: 3 velas, patrón de reversión fuerte después de caída"},
+      {t:"Patrones de reversión bajista 🔴", txt:"• Estrella fugaz (Shooting Star): cuerpo pequeño abajo, mecha larga arriba → rechazo de precios altos, señal de venta\n• Envolvente bajista: vela verde seguida de vela roja más grande → vendedores tomaron control\n• Hombre colgado: igual al martillo pero en tendencia alcista = señal bajista"},
+      {t:"Patrones de continuación", txt:"• Doji: apertura = cierre, indecisión del mercado\n• Tres soldados blancos: 3 velas verdes seguidas = continuación alcista fuerte\n• Tres cuervos negros: 3 velas rojas seguidas = continuación bajista fuerte"},
+      {t:"💡 Consejo práctico", txt:"Una sola vela no es suficiente señal. Siempre confirmá con volumen: si hay un martillo con volumen 3x el promedio, es mucho más confiable. Usá las velas en timeframes D1 para señales más limpias."}
+    ]
+  },
+  {id:4, name:"Soportes y Resistencias", ico:"📐", c:"y", p:0,
+    nivel:"Intermedio", tiempo:"20 min",
+    desc:"Niveles clave y zonas de oferta/demanda.",
+    contenido:[
+      {t:"¿Qué son?", txt:"Soporte = nivel de precio donde históricamente la demanda supera la oferta → el precio 'rebota' hacia arriba. Resistencia = nivel donde la oferta supera la demanda → el precio 'rebota' hacia abajo."},
+      {t:"Cómo identificarlos", txt:"Buscá zonas donde el precio tocó el mismo nivel 2 o más veces y rebotó. Cuantas más veces fue testeado sin romperlo, más fuerte es el nivel. Los números redondos (50.000 para BTC, 200 para NVDA) son niveles psicológicos importantes."},
+      {t:"La regla de la polaridad", txt:"Cuando una resistencia es rota con volumen → se convierte en soporte. Cuando un soporte es roto → se convierte en resistencia. Esta es una de las reglas más útiles del análisis técnico."},
+      {t:"Zonas vs niveles exactos", txt:"No pienses en líneas exactas sino en ZONAS. Si el soporte está en $50.000, la zona es $49.500-$50.500. El precio no es un robot, puede perforar levemente el nivel antes de rebotar."},
+      {t:"💡 Consejo práctico", txt:"En TraderOS, antes de entrar a cualquier operación, identificá el soporte más cercano debajo del precio actual → ese es tu stop loss natural. Y la resistencia más cercana arriba → ese es tu target mínimo."}
+    ]
+  },
+  {id:5, name:"Indicadores Técnicos", ico:"📉", c:"b", p:0,
+    nivel:"Intermedio", tiempo:"30 min",
+    desc:"RSI, MACD, Medias Móviles, Bollinger.",
+    contenido:[
+      {t:"RSI — Índice de Fuerza Relativa", txt:"Oscila entre 0 y 100. Por encima de 70 = sobrecomprado (posible corrección). Por debajo de 30 = sobrevendido (posible rebote). Lo más valioso: la DIVERGENCIA. Si el precio sube pero el RSI baja → señal bajista. Si el precio baja pero el RSI sube → señal alcista."},
+      {t:"MACD — Convergencia/Divergencia", txt:"Dos medias móviles (12 y 26 períodos) más una línea de señal (9 períodos). Señal de compra: cuando la línea MACD cruza hacia arriba la línea de señal. Señal de venta: cuando la cruza hacia abajo. El histograma muestra la fuerza del momentum."},
+      {t:"Medias Móviles (EMA/SMA)", txt:"La EMA200 es la media más importante: si el precio está ARRIBA = tendencia alcista de largo plazo. Si está ABAJO = tendencia bajista. La EMA50 y EMA20 se usan para entradas y salidas. El 'Golden Cross' (EMA50 cruza arriba la EMA200) es señal alcista potente."},
+      {t:"Bandas de Bollinger", txt:"Una media móvil (20) con bandas a 2 desviaciones estándar. El precio tiende a volver a la media. Cerca de la banda superior = posible sobrecompra. Cerca de la inferior = posible sobreventa. El 'squeeze' (bandas muy juntas) predice un movimiento explosivo próximo."},
+      {t:"💡 Consejo práctico", txt:"Nunca uses un indicador solo. Combinación ideal: RSI para momentum + MACD para tendencia + Bollinger para volatilidad. Si los tres coinciden en una señal, la probabilidad de acierto es mucho mayor."}
+    ]
+  },
+  {id:6, name:"Patrones de Precio", ico:"🔺", c:"b", p:0,
+    nivel:"Intermedio", tiempo:"25 min",
+    desc:"H&S, doble techo, triángulos, banderas.",
+    contenido:[
+      {t:"Hombro-Cabeza-Hombro (H&S)", txt:"Patrón de reversión bajista. Tres picos: el del medio (cabeza) es el más alto, los laterales (hombros) son iguales. La línea que une los mínimos = neckline. Cuando el precio rompe el neckline hacia abajo con volumen → señal de venta fuerte. Target: distancia de la cabeza al neckline proyectada hacia abajo."},
+      {t:"Doble Techo / Doble Piso", txt:"Doble Techo: el precio intenta romper una resistencia dos veces y falla → señal bajista. Doble Piso: el precio toca un soporte dos veces y rebota → señal alcista. Son de los patrones más confiables y fáciles de identificar."},
+      {t:"Triángulos", txt:"• Ascendente: máximos iguales + mínimos más altos → ruptura alcista probable\n• Descendente: mínimos iguales + máximos más bajos → ruptura bajista probable\n• Simétrico: compresión del precio, la ruptura puede ser en cualquier dirección → esperá la confirmación"},
+      {t:"Banderas y Pennants", txt:"Patrones de continuación. Después de un movimiento fuerte (el mástil), el precio consolida en un canal pequeño (la bandera). La ruptura suele ser en la misma dirección del movimiento original. El target es la longitud del mástil proyectada desde la ruptura."},
+      {t:"💡 Consejo práctico", txt:"Los patrones necesitan confirmación con volumen. Una ruptura de neckline sin volumen es una trampa (bull/bear trap). Esperá siempre la vela de confirmación antes de entrar."}
+    ]
+  },
+  {id:7, name:"Gestión de Riesgo", ico:"🛡️", c:"g", p:0,
+    nivel:"Avanzado", tiempo:"20 min",
+    desc:"Position sizing, stop-loss, ratio R:R.",
+    contenido:[
+      {t:"La regla del 1-2%", txt:"Nunca arriesgues más del 1-2% de tu capital total en una sola operación. Si tenés $1.000, el máximo que podés perder en un trade es $10-20. Esto asegura que una racha de pérdidas no te destruya la cuenta."},
+      {t:"Stop Loss — tu seguro de vida", txt:"El stop loss es la orden que cierra tu operación automáticamente si el precio va en tu contra. Siempre lo definís ANTES de entrar. Nunca lo movás en contra de tu posición (moverlo más lejos para 'esperar recuperación' es el peor error del trader novato)."},
+      {t:"Ratio Riesgo:Recompensa (R:R)", txt:"Si arriesgás $100 para ganar $100 → R:R 1:1 (mediocre). Si arriesgás $100 para ganar $300 → R:R 1:3 (excelente). Con un R:R de 1:2, podés ganar dinero incluso acertando solo el 40% de las operaciones. Nunca entres a un trade con R:R menor a 1:2."},
+      {t:"Position Sizing — cuánto comprar", txt:"Fórmula: (Capital × % riesgo) ÷ (Precio entrada - Stop Loss) = cantidad de acciones/monedas. Ejemplo: $10.000 capital × 2% riesgo = $200 de riesgo máximo. Si el stop está a $5 del precio de entrada → comprás 40 acciones."},
+      {t:"💡 Consejo práctico", txt:"Usá la Calculadora de Riesgo de TraderOS. Ingresás tu capital, el precio de entrada y el stop loss → te dice automáticamente cuánto comprar. Es la herramienta más importante para no destruir tu cuenta."}
+    ]
+  },
+  {id:8, name:"Estrategia y Plan de Trading", ico:"⚙️", c:"g", p:0,
+    nivel:"Avanzado", tiempo:"25 min",
+    desc:"Backtesting, plan de trading, journaling.",
+    contenido:[
+      {t:"¿Qué es un plan de trading?", txt:"Es un conjunto de reglas escritas que definen CUÁNDO entrás, cuándo salís, cuánto arriesgás y qué activos operás. Sin plan = operás con emociones. Con plan = operás con lógica. El Checklist Pre-Trade de TraderOS es tu plan en formato digital."},
+      {t:"Backtesting", txt:"Antes de operar una estrategia con dinero real, la 'testeás' en datos históricos. Pregunta: 'Si hubiera aplicado esta estrategia en los últimos 100 trades históricos, ¿cuánto habría ganado/perdido?' Un backtest positivo no garantiza éxito futuro, pero da confianza."},
+      {t:"El diario de trading", txt:"El diario es la herramienta más subestimada. Registrás cada entrada y salida con el motivo, las emociones, el resultado y las lecciones. Después de 50 trades, el diario te muestra patrones: ¿en qué horario ganás más? ¿qué setup funciona mejor? ¿qué errores repetís?"},
+      {t:"Setup y edge", txt:"Un 'setup' es una situación específica del mercado donde tu estrategia tiene ventaja estadística. Tu trabajo como trader es esperar ese setup, no operar todo el tiempo. La disciplina de NO operar cuando no hay setup es lo que separa a los traders rentables."},
+      {t:"💡 Consejo práctico", txt:"Anotá cada operación en el Diario Inteligente de TraderOS, incluyendo el estado emocional. Después de 20 operaciones, analizá los patrones en la sección Análisis de Patrones. Vas a descubrir cosas sobre vos mismo que no sabías."}
+    ]
+  },
+  {id:9, name:"Psicología del Trading", ico:"🧠", c:"g", p:0,
+    nivel:"Avanzado", tiempo:"20 min",
+    desc:"Control emocional, disciplina, mindset.",
+    contenido:[
+      {t:"Los 4 enemigos del trader", txt:"1. FOMO (Fear of Missing Out): entrar tarde por miedo a perderte un movimiento\n2. Revenge Trading: operar más para recuperar pérdidas\n3. Overtrading: operar demasiado por aburrimiento o exceso de confianza\n4. Paralización: miedo a entrar aunque el setup sea perfecto"},
+      {t:"El ciclo emocional del mercado", txt:"Optimismo → Emoción → Euforia (máximo del mercado) → Ansiedad → Negación → Miedo → Capitulación → Depresión (mínimo del mercado) → Esperanza → Optimismo. La mayoría compra en la euforia y vende en la depresión. Hacé lo contrario."},
+      {t:"Cómo controlar las emociones", txt:"• Definí el plan ANTES de entrar (cuando estás frío)\n• Nunca operés justo después de una pérdida grande\n• Tomá breaks después de 2-3 pérdidas seguidas\n• El Checklist Pre-Trade de TraderOS te obliga a pensar antes de actuar"},
+      {t:"Mindset del trader rentable", txt:"El trader rentable no intenta ganar en cada trade → acepta que perder es parte del proceso. No juzga un trade por su resultado sino por si siguió el plan. Un trade perdedor bien ejecutado es un buen trade. Un trade ganador por suerte es un mal trade."},
+      {t:"💡 Consejo práctico", txt:"Registrá tu estado emocional en cada entrada del Diario. Después de 30 trades, vas a ver una correlación clara entre emociones y resultados. Ese insight vale más que cualquier indicador técnico."}
+    ]
+  },
 ];}
 
 // ══════════════════════════════════════════════════
@@ -1148,6 +1296,7 @@ function go(el, page){
   if(page==='checklist'){ renderChk(); renderEmo(); }
   if(page==='patrones') renderPatterns();
   if(page==='aprendizaje') renderMods();
+  if(page==='calendario') loadCalendar();
   if(page==='riesgo') calcR();
   if(page==='conversor'){ fetchRates(); }
   if(page==='radar'){ initRadar(); }
@@ -1716,27 +1865,71 @@ const DEMO_ANALYSIS={
 // ══════════════════════════════════════════════════
 // MODULES
 // ══════════════════════════════════════════════════
+let ACTIVE_MOD = null;
+
 function renderMods(){
   const done=MY_MODULES.filter(m=>m.p===100).length, pct=Math.round(done/MY_MODULES.length*100);
   const s=(id,v)=>{ const el=document.getElementById(id); if(el)el.textContent=v; };
-  s('lp',pct+'%'); s('ld',done); s('lps',`${done}/${MY_MODULES.length}`);
+  s('lp',pct+'%'); s('ld',done); s('lps',done+'/'+MY_MODULES.length);
   const nxt=MY_MODULES.find(m=>m.p>0&&m.p<100)||MY_MODULES.find(m=>m.p===0);
-  s('ln',nxt?nxt.name:'🏆 ¡Completado!');
-  document.getElementById('mod-grid').innerHTML=MY_MODULES.map(m=>{
-    const d=m.p===100, pr=m.p>0&&m.p<100;
-    return `<div class="mod ${d?'done':''}" onclick="cycMod(${m.id})">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px">
-        <span style="font-size:18px">${m.ico}</span>
-        <span style="font-size:10px;color:${d?'var(--green)':pr?'var(--yellow)':'var(--text3)'}">${d?'✓ Completado':pr?m.p+'% progreso':'Sin iniciar'}</span>
-      </div>
-      <div style="font-size:12px;font-weight:700;font-family:Syne,sans-serif;color:var(--text);margin-bottom:3px">${m.name}</div>
-      <div style="font-size:10px;color:var(--text2);line-height:1.4;margin-bottom:7px">${m.desc}</div>
-      <div class="pb"><div class="pf ${m.c}" style="width:${m.p}%"></div></div>
-      <div style="font-size:9px;color:var(--text3);margin-top:2px">${m.p}% — Click para avanzar</div>
-    </div>`;
+  s('ln',nxt?nxt.name:'🏆 Completado!');
+  const niveles = {b:'Básico',y:'Intermedio',g:'Avanzado'};
+  const nivelActual = done < 3 ? 'Básico' : done < 6 ? 'Intermedio' : 'Avanzado';
+  s('l-nivel', nivelActual);
+  const grid = document.getElementById('mod-grid');
+  if(!grid) return;
+  grid.innerHTML = MY_MODULES.map(m=>{
+    const d=m.p===100, active=ACTIVE_MOD===m.id;
+    const nivelLabel = m.nivel || niveles[m.c] || 'Básico';
+    return '<div style="padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;background:'+(active?'var(--bg2)':'transparent')+';transition:background 0.2s" onclick="openMod('+m.id+')" onmouseenter="this.style.background='var(--bg2)'" onmouseleave="this.style.background=''+(active?'var(--bg2)':'transparent')+''">'
+      +'<div style="display:flex;align-items:center;gap:8px">'
+      +'<span style="font-size:16px">'+m.ico+'</span>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-size:11px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m.name+'</div>'
+      +'<div style="font-size:9px;color:var(--text3)">'+nivelLabel+' · '+(m.tiempo||'15 min')+'</div>'
+      +'</div>'
+      +'<span style="font-size:10px;color:'+(d?'var(--green)':'var(--text3)')+'">'+( d?'✅':'⬜')+'</span>'
+      +'</div>'
+      +'<div class="pb" style="margin-top:6px"><div class="pf '+m.c+'" style="width:'+m.p+'%"></div></div>'
+    +'</div>';
   }).join('');
 }
-function cycMod(id){ const m=MY_MODULES.find(x=>x.id===id); m.p=m.p<25?25:m.p<50?50:m.p<75?75:m.p<100?100:0; LS.set('mods',MY_MODULES); renderMods(); }
+
+function openMod(id){
+  ACTIVE_MOD = id;
+  const m = MY_MODULES.find(x=>x.id===id);
+  if(!m) return;
+  renderMods();
+  const header = document.getElementById('mod-content-header');
+  const body = document.getElementById('mod-content-body');
+  const footer = document.getElementById('mod-content-footer');
+  const btn = document.getElementById('mod-complete-btn');
+  if(header) header.innerHTML = '<span class="ct">'+m.ico+' '+m.name+'</span><span class="ctag '+(m.c==='b'?'bl':m.c==='y'?'y':'g')+'">'+( m.nivel||'Básico')+'</span>';
+  if(body){
+    const contenido = m.contenido || [];
+    body.innerHTML = contenido.map((c,i)=>{
+      const txt = c.txt.replace(/\n/g,'<br>');
+      return '<div style="margin-bottom:16px;padding:14px;background:var(--bg2);border-radius:8px;border-left:3px solid var(--'+(m.c==='b'?'blue':m.c==='y'?'yellow':'green')+');">'
+        +'<div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px">'+c.t+'</div>'
+        +'<div style="font-size:12px;color:var(--text2);line-height:1.7">'+txt+'</div>'
+        +'</div>';
+    }).join('') + (m.p===100 ? '<div style="text-align:center;padding:16px;color:var(--green);font-size:12px">✅ Módulo completado</div>' : '');
+  }
+  if(footer) footer.style.display='block';
+  if(btn) btn.textContent = m.p===100 ? '↺ Reiniciar módulo' : '✅ Marcar como completado';
+}
+
+function completeCurrentMod(){
+  if(!ACTIVE_MOD) return;
+  const m = MY_MODULES.find(x=>x.id===ACTIVE_MOD);
+  if(!m) return;
+  m.p = m.p===100 ? 0 : 100;
+  LS.set('mods',MY_MODULES);
+  openMod(ACTIVE_MOD);
+  renderMods();
+}
+
+function cycMod(id){ openMod(id); }
 
 // ══════════════════════════════════════════════════
 // CALENDAR
@@ -1750,8 +1943,88 @@ const CAL=[
   {t:'08:30',n:'Tasa de Desempleo',f:'🇺🇸',i:'h',d:'Vie'},
 ];
 function renderMiniCal(){
-  document.getElementById('mini-cal').innerHTML = CAL.filter(e=>e.i==='h').map(e=>`
+  const el = document.getElementById('mini-cal');
+  if(el) el.innerHTML = CAL.filter(e=>e.i==='h').map(e=>`
     <div class="ev"><span style="color:var(--text2);min-width:40px">${e.t}</span><div class="dot ${e.i}"></div><span style="flex:1;color:var(--text)">${e.f} ${e.n}</span><span style="font-size:9px;color:var(--text3)">${e.d}</span></div>`).join('');
+}
+
+// ── CALENDARIO COMPLETO ──────────────────────────────
+const FULL_CAL = [
+  {d:'Lun',t:'10:00',n:'REM — Resultado BCRA',f:'🇦🇷',i:'h',cat:'ar',imp:'GGAL,AL30',desc:'Reservas del BCRA, impacto en tipo de cambio'},
+  {d:'Lun',t:'14:30',n:'PMI Manufacturero USA',f:'🇺🇸',i:'m',cat:'us',imp:'SPY,QQQ',desc:'Actividad industrial, impacto en índices'},
+  {d:'Mar',t:'08:30',n:'Inflación CPI EE.UU.',f:'🇺🇸',i:'h',cat:'us',imp:'BTC,SPY,QQQ,GLD',desc:'Dato más importante del mes. Alto CPI = Fed sube tasas = cripto y acciones bajan'},
+  {d:'Mar',t:'16:00',n:'Confianza del Consumidor',f:'🇺🇸',i:'m',cat:'us',imp:'SPY,AAPL,AMZN',desc:'Indicador de gasto del consumidor'},
+  {d:'Mié',t:'08:30',n:'Actas FOMC — Fed',f:'🇺🇸',i:'h',cat:'us',imp:'BTC,SPY,QQQ,GLD,XAUUSD',desc:'Decisión de tasas de interés. El evento más movedor del mercado'},
+  {d:'Mié',t:'10:30',n:'Inventarios de Petróleo EIA',f:'🇺🇸',i:'m',cat:'us',imp:'XBRUSD,YPFD,PAMP',desc:'Si inventarios bajan → petróleo sube → YPF y PAMP suben'},
+  {d:'Jue',t:'08:30',n:'Solicitudes de Desempleo',f:'🇺🇸',i:'m',cat:'us',imp:'SPY,QQQ',desc:'Más desempleo = economía débil = Fed puede bajar tasas'},
+  {d:'Jue',t:'15:00',n:'Licitación de Letras BCRA',f:'🇦🇷',i:'h',cat:'ar',imp:'AL30,GGAL',desc:'Resultado de licitaciones del tesoro argentino'},
+  {d:'Vie',t:'08:30',n:'NFP — Nóminas no Agrícolas',f:'🇺🇸',i:'h',cat:'us',imp:'SPY,QQQ,BTC,XAUUSD',desc:'Dato de empleo más importante. Mueve todos los mercados'},
+  {d:'Vie',t:'08:30',n:'Tasa de Desempleo USA',f:'🇺🇸',i:'h',cat:'us',imp:'SPY,QQQ',desc:'Desempleo bajo = economía fuerte = Fed mantiene tasas altas'},
+  {d:'Var',t:'—',n:'Earnings NVDA / Próx. trimestre',f:'🇺🇸',i:'h',cat:'us',imp:'NVDA,QQQ,SPY',desc:'Reporte de ganancias. Mueve NVDA ±15% en un día'},
+  {d:'Var',t:'—',n:'Halvening BTC histórico',f:'₿',i:'h',cat:'crypto',imp:'BTC,ETH,SOL,DOGE',desc:'Reducción a la mitad de recompensa minera. Evento alcista estructural'},
+  {d:'Var',t:'—',n:'IPC Argentina — INDEC',f:'🇦🇷',i:'h',cat:'ar',imp:'AL30,GGAL,YPFD,PAMP',desc:'Dato de inflación argentina. Impacta bonos y acciones locales'},
+  {d:'Var',t:'—',n:'Decisión Fed — FOMC',f:'🇺🇸',i:'h',cat:'us',imp:'BTC,SPY,QQQ,GLD,XAUUSD',desc:'8 veces al año. Sube, baja o mantiene tasas'},
+  {d:'Var',t:'—',n:'Vencimiento Bonos AL30',f:'🇦🇷',i:'h',cat:'ar',imp:'AL30,GGAL',desc:'Pagos de interés y capital del bono soberano AL30'},
+];
+
+let CAL_FILTER = 'all';
+
+function loadCalendar(){
+  renderFullCalendar();
+  // KPIs
+  const today = FULL_CAL.filter(e=>e.i==='h').length;
+  const high = FULL_CAL.filter(e=>e.i==='h').length;
+  const next = FULL_CAL.find(e=>e.i==='h');
+  const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  s('cal-today', today);
+  s('cal-high', high);
+  s('cal-next', next ? next.n.substring(0,20)+'...' : '—');
+  renderUpcoming();
+}
+
+function renderFullCalendar(){
+  const filter = document.getElementById('cal-filter') ? document.getElementById('cal-filter').value : 'all';
+  const items = FULL_CAL.filter(e=>{
+    if(filter==='high') return e.i==='h';
+    if(filter==='us') return e.cat==='us';
+    if(filter==='ar') return e.cat==='ar';
+    if(filter==='crypto') return e.cat==='crypto';
+    return true;
+  });
+  const body = document.getElementById('cal-body');
+  if(!body) return;
+  if(!items.length){body.innerHTML='<div style="padding:30px;text-align:center;color:var(--text3)">Sin eventos para este filtro</div>';return;}
+  body.innerHTML = items.map(e=>{
+    const impColor = e.i==='h'?'var(--red)':e.i==='m'?'var(--yellow)':'var(--text3)';
+    const impLabel = e.i==='h'?'⚠️ Alto':e.i==='m'?'◦ Medio':'· Bajo';
+    const assets = (e.imp||'').split(',').map(a=>'<span style="font-size:9px;padding:2px 6px;background:var(--bg3);border-radius:4px;color:var(--text2)">'+a+'</span>').join(' ');
+    return '<div style="padding:12px 14px;border-bottom:1px solid var(--border);cursor:default" onmouseenter="this.style.background='var(--bg2)'" onmouseleave="this.style.background='transparent'">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">'
+      +'<span style="font-size:16px">'+e.f+'</span>'
+      +'<div style="flex:1">'
+      +'<div style="font-size:12px;font-weight:700;color:var(--text)">'+e.n+'</div>'
+      +'<div style="font-size:10px;color:var(--text3)">'+e.d+' '+e.t+'</div>'
+      +'</div>'
+      +'<span style="font-size:10px;color:'+impColor+'">'+impLabel+'</span>'
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--text2);margin-bottom:6px">'+e.desc+'</div>'
+      +'<div style="display:flex;gap:4px;flex-wrap:wrap">'+assets+'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function renderCal(){ renderFullCalendar(); }
+
+function renderUpcoming(){
+  const el = document.getElementById('cal-upcoming');
+  if(!el) return;
+  const top = FULL_CAL.filter(e=>e.i==='h').slice(0,5);
+  el.innerHTML = top.map(e=>{
+    return '<div style="padding:8px;background:var(--bg2);border-radius:6px;border-left:3px solid var(--red)">'
+      +'<div style="font-size:11px;font-weight:700;color:var(--text)">'+e.f+' '+e.n+'</div>'
+      +'<div style="font-size:9px;color:var(--text3);margin-top:2px">'+e.d+' · '+e.imp+'</div>'
+    +'</div>';
+  }).join('');
 }
 
 // ══════════════════════════════════════════════════
