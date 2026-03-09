@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>TraderOS v3 — Dashboard Pro</title>
 <!-- PWA -->
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#090C10">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2394,20 +2394,13 @@ function getRadarDemo(){
 function shareRadarWA(){
   if(!RADAR.items.length){ alert('Corré el análisis primero.'); return; }
   const top = RADAR.items.filter(n=>n.impact==='ALTO').slice(0,4);
-  let msg = '🌍 *TraderOS — Radar de Noticias*
-';
-  msg += new Date().toLocaleDateString('es-AR')+'
-
-';
+  let msg = '🌍 *TraderOS — Radar de Noticias*\n';
+  msg += new Date().toLocaleDateString('es-AR')+'\n\n';
   top.forEach(n=>{
     const ico = n.type==='RIESGO'?'⚠️':n.type==='OPORTUNIDAD'?'🚀':'ℹ️';
-    msg += `${ico} *${n.headline}*
-`;
-    msg += `_${n.summary.split('.')[0]}._
-`;
-    msg += `→ ${(n.affected_assets||[]).join(', ')} — ${n.direction}
-
-`;
+    msg += ico+' *'+n.headline+'*\n';
+    msg += '_'+(n.summary.split('.')[0])+'._\n';
+    msg += '→ '+(n.affected_assets||[]).join(', ')+' — '+n.direction+'\n\n';
   });
   msg += '_TraderOS · No es asesoramiento financiero._';
   window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
@@ -3026,21 +3019,9 @@ function showUpdateToast() {
 function showIOSInstructions() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   if (isIOS) {
-    alert('Para instalar TraderOS en iOS:
-
-1. Tocá el botón Compartir ( ↑ ) en Safari
-2. Seleccioná "Agregar a pantalla de inicio"
-3. Tocá "Agregar"
-
-¡Listo! Vas a tener el ícono de TraderOS en tu pantalla.');
+    alert('Para instalar TraderOS en iOS:\n\n1. Tocá el botón Compartir ( ↑ ) en Safari\n2. Seleccioná "Agregar a pantalla de inicio"\n3. Tocá "Agregar"\n\n¡Listo! Vas a tener el ícono de TraderOS en tu pantalla.');
   } else {
-    alert('En Android:
-
-1. Tocá el menú ⋮ del navegador
-2. Seleccioná "Agregar a pantalla de inicio" o "Instalar app"
-3. Confirmá
-
-¡Listo!');
+    alert('En Android:\n\n1. Tocá el menú ⋮ del navegador\n2. Seleccioná "Agregar a pantalla de inicio" o "Instalar app"\n3. Confirmá\n\n¡Listo!');
   }
 }
 
@@ -3079,28 +3060,45 @@ if (initPage) {
   mLink.rel = 'manifest'; mLink.href = mUrl;
   document.head.appendChild(mLink);
 
-  // ── 2. SERVICE WORKER via Blob ────────────────────
+  // ── 2. SERVICE WORKER — inline via blob
   if('serviceWorker' in navigator){
-    const swCode = "\nconst VERSION = 'traderos-v3.2';\nconst CACHE = VERSION;\nself.addEventListener('install', e => {\n  self.skipWaiting();\n});\nself.addEventListener('activate', e => {\n  e.waitUntil(\n    caches.keys().then(keys =>\n      Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))\n    ).then(()=>self.clients.claim())\n     .then(()=>self.clients.matchAll().then(cs=>cs.forEach(c=>c.postMessage({type:'SW_UPDATED',version:VERSION}))))\n  );\n});\nself.addEventListener('fetch', e => {\n  if(e.request.method!=='GET') return;\n  e.respondWith(\n    fetch(e.request).then(r=>{\n      const rc=r.clone();\n      caches.open(CACHE).then(c=>c.put(e.request,rc));\n      return r;\n    }).catch(()=>caches.match(e.request))\n  );\n});\nself.addEventListener('push', e => {\n  if(!e.data) return;\n  let d; try{d=e.data.json();}catch(x){d={title:'TraderOS',body:e.data.text()};}\n  e.waitUntil(self.registration.showNotification(\n    d.title||'🔔 TraderOS — '+( d.sym||'Alerta'),\n    {body:d.body||d.summary||'Nueva alerta de trading',icon:d.icon||'',badge:d.badge||'',tag:d.sym||'traderos',renotify:true,requireInteraction:true,vibrate:[200,100,200],data:{url:d.url||'./'},actions:[{action:'open',title:'📊 Ver alerta'},{action:'dismiss',title:'✕ Descartar'}]}\n  ));\n});\nself.addEventListener('notificationclick', e => {\n  e.notification.close();\n  if(e.action==='dismiss') return;\n  e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(cs=>{\n    const w=cs.find(c=>c.focused||c.visibilityState==='visible');\n    if(w){w.focus();w.postMessage({type:'NAVIGATE',page:'alertas'});return;}\n    return self.clients.openWindow(e.notification.data?.url||'./');\n  }));\n});\n";
-    const swBlob = new Blob([swCode], {type:'application/javascript'});
-    const swUrl  = URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swUrl, {scope:'./'})
-      .then(reg => {
-        console.log('[TraderOS] SW registrado via blob ✅');
-        reg.addEventListener('updatefound', () => {
-          const nw = reg.installing;
-          nw.addEventListener('statechange', () => {
-            if(nw.state==='installed' && navigator.serviceWorker.controller) showUpdateToast();
+    const swCode = `
+const CACHE='traderos-v3';
+self.addEventListener('install',()=>self.skipWaiting());
+self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+self.addEventListener('fetch',e=>{
+  if(e.request.method!=='GET')return;
+  e.respondWith(fetch(e.request).then(r=>{
+    const rc=r.clone();
+    caches.open(CACHE).then(c=>c.put(e.request,rc));
+    return r;
+  }).catch(()=>caches.match(e.request)));
+});
+self.addEventListener('push',e=>{
+  if(!e.data)return;
+  let d;try{d=e.data.json();}catch(x){d={title:'TraderOS',body:e.data.text()};}
+  e.waitUntil(self.registration.showNotification(d.title||'TraderOS',{body:d.body||'Alerta',icon:'/favicon.ico',tag:'traderos',requireInteraction:true,vibrate:[200,100,200]}));
+});`;
+    try{
+      const swBlob=new Blob([swCode],{type:'application/javascript'});
+      const swUrl=URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swUrl,{scope:'./'})
+        .then(reg=>{
+          console.log('[TraderOS] SW OK');
+          reg.addEventListener('updatefound',()=>{
+            const nw=reg.installing;
+            nw.addEventListener('statechange',()=>{
+              if(nw.state==='installed'&&navigator.serviceWorker.controller)showUpdateToast();
+            });
           });
-        });
-      }).catch(e => console.warn('[TraderOS] SW error:', e));
-    navigator.serviceWorker.addEventListener('message', e => {
-      if(e.data?.type==='SW_UPDATED') showUpdateToast();
-      if(e.data?.type==='NAVIGATE'){
-        const nav=document.querySelector(`.ni[onclick*="${e.data.page}"]`);
-        if(nav) go(nav, e.data.page);
-      }
-    });
+        }).catch(e=>console.warn('[TraderOS] SW blob not supported:',e));
+      navigator.serviceWorker.addEventListener('message',e=>{
+        if(e.data?.type==='NAVIGATE'){
+          const nav=document.querySelector(`.ni[onclick*="${e.data.page}"]`);
+          if(nav)go(nav,e.data.page);
+        }
+      });
+    }catch(e){console.warn('[TraderOS] SW error:',e);}
   }
 
   // ── 3. INSTALL BANNER ─────────────────────────────
