@@ -1868,52 +1868,64 @@ const DEMO_ANALYSIS={
 let ACTIVE_MOD = null;
 
 function renderMods(){
-  const done=MY_MODULES.filter(m=>m.p===100).length, pct=Math.round(done/MY_MODULES.length*100);
-  const s=(id,v)=>{ const el=document.getElementById(id); if(el)el.textContent=v; };
-  s('lp',pct+'%'); s('ld',done); s('lps',done+'/'+MY_MODULES.length);
-  const nxt=MY_MODULES.find(m=>m.p>0&&m.p<100)||MY_MODULES.find(m=>m.p===0);
-  s('ln',nxt?nxt.name:'🏆 Completado!');
-  const niveles = {b:'Básico',y:'Intermedio',g:'Avanzado'};
-  const nivelActual = done < 3 ? 'Básico' : done < 6 ? 'Intermedio' : 'Avanzado';
-  s('l-nivel', nivelActual);
-  const grid = document.getElementById('mod-grid');
+  var done = MY_MODULES.filter(function(m){return m.p===100;}).length;
+  var pct = Math.round(done/MY_MODULES.length*100);
+  function s(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+  s('lp', pct+'%');
+  s('ld', done);
+  s('lps', done+'/'+MY_MODULES.length);
+  var nxt = MY_MODULES.find(function(m){return m.p>0&&m.p<100;})||MY_MODULES.find(function(m){return m.p===0;});
+  s('ln', nxt ? nxt.name : '🏆 Completado!');
+  s('l-nivel', done<3?'Básico':done<6?'Intermedio':'Avanzado');
+  var grid = document.getElementById('mod-grid');
   if(!grid) return;
-  grid.innerHTML = MY_MODULES.map(m=>{
-    const d=m.p===100, active=ACTIVE_MOD===m.id;
-    const nivelLabel = m.nivel || niveles[m.c] || 'Básico';
-    return '<div style="padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer;background:'+(active?'var(--bg2)':'transparent')+';transition:background 0.2s" onclick="openMod('+m.id+')" onmouseenter="this.style.background='var(--bg2)'" onmouseleave="this.style.background=''+(active?'var(--bg2)':'transparent')+''">'
-      +'<div style="display:flex;align-items:center;gap:8px">'
-      +'<span style="font-size:16px">'+m.ico+'</span>'
-      +'<div style="flex:1;min-width:0">'
-      +'<div style="font-size:11px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+m.name+'</div>'
-      +'<div style="font-size:9px;color:var(--text3)">'+nivelLabel+' · '+(m.tiempo||'15 min')+'</div>'
-      +'</div>'
-      +'<span style="font-size:10px;color:'+(d?'var(--green)':'var(--text3)')+'">'+( d?'✅':'⬜')+'</span>'
-      +'</div>'
-      +'<div class="pb" style="margin-top:6px"><div class="pf '+m.c+'" style="width:'+m.p+'%"></div></div>'
-    +'</div>';
-  }).join('');
+  var html = '';
+  MY_MODULES.forEach(function(m){
+    var d = m.p===100;
+    var active = ACTIVE_MOD===m.id;
+    var nivel = m.nivel||'Básico';
+    var tiempo = m.tiempo||'15 min';
+    var chk = d ? '✅' : '⬜';
+    html += '<div style="padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer" onclick="openMod('+m.id+')">';
+    html += '<div style="display:flex;align-items:center;gap:8px">';
+    html += '<span style="font-size:16px">'+m.ico+'</span>';
+    html += '<div style="flex:1;min-width:0">';
+    html += '<div style="font-size:11px;font-weight:700;color:var(--text)">'+m.name+'</div>';
+    html += '<div style="font-size:9px;color:var(--text3)">'+nivel+' &middot; '+tiempo+'</div>';
+    html += '</div>';
+    html += '<span style="font-size:13px">'+chk+'</span>';
+    html += '</div>';
+    html += '<div class="pb" style="margin-top:6px"><div class="pf '+m.c+'" style="width:'+m.p+'%"></div></div>';
+    html += '</div>';
+  });
+  grid.innerHTML = html;
 }
 
 function openMod(id){
   ACTIVE_MOD = id;
-  const m = MY_MODULES.find(x=>x.id===id);
+  var m = MY_MODULES.find(function(x){return x.id===id;});
   if(!m) return;
   renderMods();
-  const header = document.getElementById('mod-content-header');
-  const body = document.getElementById('mod-content-body');
-  const footer = document.getElementById('mod-content-footer');
-  const btn = document.getElementById('mod-complete-btn');
-  if(header) header.innerHTML = '<span class="ct">'+m.ico+' '+m.name+'</span><span class="ctag '+(m.c==='b'?'bl':m.c==='y'?'y':'g')+'">'+( m.nivel||'Básico')+'</span>';
+  var header = document.getElementById('mod-content-header');
+  var body = document.getElementById('mod-content-body');
+  var footer = document.getElementById('mod-content-footer');
+  var btn = document.getElementById('mod-complete-btn');
+  var tagColor = m.c==='b'?'bl':m.c==='y'?'y':'g';
+  if(header) header.innerHTML = '<span class="ct">'+m.ico+' '+m.name+'</span><span class="ctag '+tagColor+'">'+(m.nivel||'Básico')+'</span>';
   if(body){
-    const contenido = m.contenido || [];
-    body.innerHTML = contenido.map((c,i)=>{
-      const txt = c.txt.replace(/\n/g,'<br>');
-      return '<div style="margin-bottom:16px;padding:14px;background:var(--bg2);border-radius:8px;border-left:3px solid var(--'+(m.c==='b'?'blue':m.c==='y'?'yellow':'green')+');">'
-        +'<div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px">'+c.t+'</div>'
-        +'<div style="font-size:12px;color:var(--text2);line-height:1.7">'+txt+'</div>'
-        +'</div>';
-    }).join('') + (m.p===100 ? '<div style="text-align:center;padding:16px;color:var(--green);font-size:12px">✅ Módulo completado</div>' : '');
+    var contenido = m.contenido||[];
+    var borderColor = m.c==='b'?'var(--blue)':m.c==='y'?'var(--yellow)':'var(--green)';
+    var bhtml = '';
+    contenido.forEach(function(c){
+      var txt = c.txt.replace(/
+/g,'<br>');
+      bhtml += '<div style="margin-bottom:16px;padding:14px;background:var(--bg2);border-radius:8px;border-left:3px solid '+borderColor+'">';
+      bhtml += '<div style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:8px">'+c.t+'</div>';
+      bhtml += '<div style="font-size:12px;color:var(--text2);line-height:1.7">'+txt+'</div>';
+      bhtml += '</div>';
+    });
+    if(m.p===100) bhtml += '<div style="text-align:center;padding:16px;color:var(--green)">✅ Módulo completado</div>';
+    body.innerHTML = bhtml;
   }
   if(footer) footer.style.display='block';
   if(btn) btn.textContent = m.p===100 ? '↺ Reiniciar módulo' : '✅ Marcar como completado';
@@ -1921,10 +1933,10 @@ function openMod(id){
 
 function completeCurrentMod(){
   if(!ACTIVE_MOD) return;
-  const m = MY_MODULES.find(x=>x.id===ACTIVE_MOD);
+  var m = MY_MODULES.find(function(x){return x.id===ACTIVE_MOD;});
   if(!m) return;
   m.p = m.p===100 ? 0 : 100;
-  LS.set('mods',MY_MODULES);
+  LS.set('mods', MY_MODULES);
   openMod(ACTIVE_MOD);
   renderMods();
 }
