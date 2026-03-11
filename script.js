@@ -3166,3 +3166,4 @@ function inicializarUsuario() {
 
 // Ejecutamos esta función cada vez que se cargue el script
 inicializarUsuario();
+}
