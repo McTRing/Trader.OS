@@ -3165,5 +3165,43 @@ function inicializarUsuario() {
 }
 
 // Ejecutamos esta función cada vez que se cargue el script
-inicializarUsuario();
+
 }
+
+function installPWA() {
+    console.log("Intentando instalar TradeDIOS...");
+    alert("Función de instalación activada. ¡Pronto estará disponible!");
+}
+
+// --- SISTEMA DE PERSONALIZACIÓN ---
+
+function inicializarUsuario() {
+    let nombreUsuario = localStorage.getItem('tradeDios_user');
+
+    if (!nombreUsuario) {
+        nombreUsuario = prompt("¡Bienvenido a TradeDIOS! ¿Cuál es tu nombre de Trader?");
+        
+        if (nombreUsuario) {
+            localStorage.setItem('tradeDios_user', nombreUsuario);
+        } else {
+            nombreUsuario = "Trader Pro";
+        }
+    }
+
+    const welcomeMsg = document.querySelector('.nav-brand span') || document.querySelector('h2');
+    if (welcomeMsg) {
+        welcomeMsg.innerText = `TradeDIOS | ${nombreUsuario}`;
+    }
+}
+function dismissBanner() {
+    const banner = document.getElementById('pwa-banner');
+    if (banner) {
+        banner.style.transition = "all 0.5s ease";
+        banner.style.opacity = "0";
+        banner.style.transform = "translateY(20px)";
+        
+        setTimeout(() => {
+            banner.style.display = 'none';
+        }, 500);
+    }
+inicializarUsuario();
