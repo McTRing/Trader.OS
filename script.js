@@ -8,40 +8,10 @@ function finishOnboarding(){
   if(typeof initUI === 'function') initUI();
   if(typeof publishMyStats === 'function') publishMyStats();
 }
-</script>
-</head>
-<body>
-
 <!-- ONBOARDING MODAL -->
 <div class="overlay" id="onboarding">
   <div class="modal">
     <div style="font-size:32px;margin-bottom:10px">🚀</div>
-    <div class="modal-title">Bienvenido a TradeDIOS</div>
-    <div class="modal-sub">Para aparecer en el <strong>leaderboard del grupo</strong> y compartir trades, necesitás un nombre. El grupo lo verá.</div>
-    <div class="fg" style="margin-bottom:16px">
-      <label class="fl">Tu nombre (visible al grupo)</label>
-      <input class="fi" id="ob-name" placeholder="Ej: Carlos, Martina, Lucas…" style="font-size:14px;padding:10px 12px" autofocus>
-    </div>
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px;background:var(--bg3);border-radius:6px;border:1px solid var(--border)">
-      <div style="font-size:20px">📱</div>
-      <div style="font-size:11px;color:var(--text2)">El leaderboard y el feed de trades son <strong style="color:var(--text)">compartidos con todo el grupo</strong> en tiempo real. Cada uno abre el mismo archivo.</div>
-    </div>
-    <button class="btn bp" style="width:100%;padding:10px;font-size:13px" onclick="finishOnboarding()">Entrar al dashboard →</button>
-  </div>
-</div>
-
-<div class="shell">
-
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="logo">
-    <div class="logo-mark">Trader<span>OS</span></div>
-    <div class="logo-ver">v3.1 · Pro + Multi-User</div>
-  </div>
-  <nav class="nav">
-    <div class="nsec">Principal</div>
-    <div class="ni on" onclick="go(this,'dashboard')"><span class="ni-ic">▣</span>Dashboard</div>
-    <div class="ni" onclick="go(this,'alertas')"><span class="ni-ic">🔔</span>Alertas IA<span class="nbadge warn" id="nb-alertas">0</span></div>
     <div class="ni" onclick="go(this,'charts')"><span class="ni-ic">📊</span>Gráfico Live</div>
     <div class="ni" onclick="go(this,'screener')"><span class="ni-ic">🔍</span>Screener</div>
     <div class="nsec">Comunidad 👥</div>
