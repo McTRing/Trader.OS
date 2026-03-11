@@ -3156,13 +3156,13 @@ function inicializarUsuario() {
         }
     }
 
-    // 3. Buscamos un lugar en el HTML para mostrarlo
-    // Tip: Vamos a buscar el título del Dashboard
-    const welcomeMsg = document.querySelector('.nav-brand span') || document.querySelector('h2');
+// 3. Buscamos el logo para personalizarlo
+    const welcomeMsg = document.querySelector('.logo-mark');
     if (welcomeMsg) {
-        welcomeMsg.innerText = `TradeDIOS | ${nombreUsuario}`;
+        // Usamos innerHTML para mantener el estilo del <span> que definiste en CSS
+        welcomeMsg.innerHTML = `Trade<span>DIOS</span> | ${nombreUsuario}`;
     }
-}
+} // Esta es la llave que cierra la función inicializarUsuario
 
 // Ejecutamos esta función cada vez que se cargue el script
 
