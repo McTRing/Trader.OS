@@ -1,4 +1,3 @@
-<style>
 :root{
   --bg:#090c10;--bg2:#0d1117;--bg3:#161b22;--bg4:#1c2330;
   --border:#21262d;--border2:#30363d;
@@ -222,4 +221,3 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 /* Safe area para notch del iPhone */
 .main{padding-top:env(safe-area-inset-top);}
 body{padding-bottom:env(safe-area-inset-bottom);}
-</style>
