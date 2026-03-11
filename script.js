@@ -3116,6 +3116,53 @@ self.addEventListener('push',e=>{
   <button onclick="location.reload()" style="padding:4px 10px;background:rgba(63,185,80,.15);color:#3fb950;border:1px solid rgba(63,185,80,.3);border-radius:4px;font-size:9px;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0">Actualizar</button>
   <button onclick="this.parentElement.style.display='none'" style="background:none;border:none;color:#484f58;cursor:pointer;font-size:16px;padding:0 2px;flex-shrink:0">✕</button>
 </div>
+// --- FUNCIONES DEL BANNER PWA ---
 
-</body>
-</html>
+// 1. Función para cerrar el banner con animación suave
+function dismissBanner() {
+    const banner = document.getElementById('pwa-banner');
+    if (banner) {
+        banner.style.transition = "all 0.5s ease";
+        banner.style.opacity = "0";
+        banner.style.transform = "translateY(20px)";
+        
+        setTimeout(() => {
+            banner.style.display = 'none';
+        }, 500);
+    }
+}
+
+// 2. Función básica para el botón Instalar (evita errores en consola)
+function installPWA() {
+    console.log("Intentando instalar TradeDIOS...");
+    // Aquí podrías añadir la lógica real de instalación más adelante
+    alert("Función de instalación activada. ¡Pronto estará disponible!");
+}
+// --- SISTEMA DE PERSONALIZACIÓN ---
+
+function inicializarUsuario() {
+    // 1. Intentamos obtener el nombre guardado
+    let nombreUsuario = localStorage.getItem('tradeDios_user');
+
+    // 2. Si no existe, lo pedimos
+    if (!nombreUsuario) {
+        nombreUsuario = prompt("¡Bienvenido a TradeDIOS! ¿Cuál es tu nombre de Trader?");
+        
+        // Si el usuario escribió algo, lo guardamos
+        if (nombreUsuario) {
+            localStorage.setItem('tradeDios_user', nombreUsuario);
+        } else {
+            nombreUsuario = "Trader Pro"; // Nombre por defecto
+        }
+    }
+
+    // 3. Buscamos un lugar en el HTML para mostrarlo
+    // Tip: Vamos a buscar el título del Dashboard
+    const welcomeMsg = document.querySelector('.nav-brand span') || document.querySelector('h2');
+    if (welcomeMsg) {
+        welcomeMsg.innerText = `TradeDIOS | ${nombreUsuario}`;
+    }
+}
+
+// Ejecutamos esta función cada vez que se cargue el script
+inicializarUsuario();
