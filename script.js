@@ -1,3 +1,24 @@
+function go(element, pageId) {
+    // 1. Quitamos la clase 'on' de todos los botones del menú
+    document.querySelectorAll('.ni').forEach(el => el.classList.remove('on'));
+    
+    // 2. Le ponemos la clase 'on' solo al botón al que le hicimos clic
+    if (element) {
+        element.classList.add('on');
+    }
+
+    // 3. Escondemos todas las páginas
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('on'));
+
+    // 4. Mostramos solo la página que queremos ver
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.add('on');
+    }
+
+    // 5. Cerramos el menú en móviles (opcional)
+    console.log("Navegando a: " + pageId);
+}
 function finishOnboarding(){
   var nameEl = document.getElementById('ob-name');
   var name = nameEl ? nameEl.value.trim() : '';
@@ -998,18 +1019,6 @@ function defaultMods(){return[
   },
 ];}
 
-// ══════════════════════════════════════════════════
-// ONBOARDING
-// ══════════════════════════════════════════════════
-function finishOnboarding(){
-  const name = document.getElementById('ob-name').value.trim();
-  if(!name){ document.getElementById('ob-name').focus(); return; }
-  USERNAME = name;
-  LS.set('username', name);
-  document.getElementById('onboarding').classList.add('hide');
-  initUI();
-  publishMyStats();
-}
 function changeUser(){
   const n = prompt('Nuevo nombre:', USERNAME);
   if(n && n.trim()){ USERNAME=n.trim(); LS.set('username',USERNAME); initUI(); publishMyStats(); }
